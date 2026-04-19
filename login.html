@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PortfolioHub | Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="auth-container animate-fade-in">
+        <div class="auth-card">
+            <div class="mb-4 text-center">
+                <a href="index.html" class="sidebar-logo" style="justify-content: center; font-size: 2rem;">
+                    <i class="fas fa-layer-group"></i> PortHub
+                </a>
+            </div>
+            <h2>Welcome Back</h2>
+            <p>Login to manage your portfolio</p>
+            
+            <form id="login-form" style="text-align: left;">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="login-email" class="form-control" placeholder="john@example.com">
+                    <span class="error-message" id="email-error">Please enter a valid email</span>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="••••••••">
+                    <span class="error-message" id="password-error">Password is required</span>
+                </div>
+                <div id="general-error" class="error-message mb-4" style="text-align: center;">Invalid credentials. For demo, use john@example.com / password</div>
+                
+                <button type="submit" class="btn btn-primary w-full">Login</button>
+            </form>
+            
+            <p class="mt-4 text-sm">Don't have an account? <a href="register.html">Sign up</a></p>
+            <p class="mt-2"><a href="index.html" class="text-secondary text-sm"><i class="fas fa-arrow-left"></i> Back to Home</a></p>
+        </div>
+    </div>
+
+    <!-- We load main.js for theme initialization, but no need for sidebar logic here -->
+    <script src="js/main.js"></script>
+    <script src="js/login.js"></script>
+</body>
+</html>
