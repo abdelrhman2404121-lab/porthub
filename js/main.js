@@ -92,7 +92,7 @@ function initSidebar() {
             }
         });
     }
-    
+
     // Highlight active link
     const currentPath = window.location.pathname.split('/').pop() || 'index.html';
     const navLinks = document.querySelectorAll('.sidebar-nav a');
@@ -106,7 +106,7 @@ function initSidebar() {
 function initNavbar() {
     const userMenu = document.getElementById('user-menu');
     const userDropdown = document.getElementById('user-dropdown');
-    
+
     if (userMenu && userDropdown) {
         userMenu.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -123,11 +123,11 @@ function initNavbar() {
     // Update greeting and avatar if logged in
     const greeting = document.getElementById('user-greeting');
     const avatar = document.getElementById('nav-avatar');
-    
+
     if (currentUser) {
         if (greeting) greeting.textContent = `Hi, ${currentUser.name.split(' ')[0]}`;
         if (avatar) avatar.src = currentUser.avatar || 'https://i.pravatar.cc/150?img=3';
-        
+
         // Setup logout
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {
@@ -160,9 +160,9 @@ function showNotification(message, type = 'success') {
 
     const notif = document.createElement('div');
     notif.className = `notification ${type}`;
-    
+
     const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-    
+
     notif.innerHTML = `
         <i class="fas ${icon}"></i>
         <span>${message}</span>
@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSidebar();
     initNavbar();
     initGlobalSearch();
-    
+
     const themeBtn = document.getElementById('theme-toggle');
-    if(themeBtn) themeBtn.addEventListener('click', toggleTheme);
+    if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
 });
