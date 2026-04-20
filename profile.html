@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PortfolioHub | Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-logo">
+                    <i class="fas fa-layer-group"></i> PortHub
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="explore.html"><i class="fas fa-compass"></i> Explore</a></li>
+                    <li><a href="projects.html"><i class="fas fa-briefcase"></i> Projects</a></li>
+                    <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+                    <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="main-content">
+            <!-- Navbar -->
+            <nav class="navbar">
+                <div class="nav-left">
+                    <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <form class="search-bar" id="global-search-form">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search...">
+                    </form>
+                </div>
+                <div class="nav-right">
+                    <button class="theme-toggle" id="theme-toggle"><i class="fas fa-moon" id="theme-icon"></i></button>
+                    <div class="auth-links flex gap-2" id="auth-links" style="display: none;">
+                        <a href="login.html" class="btn btn-outline">Login</a>
+                        <a href="register.html" class="btn btn-primary">Register</a>
+                    </div>
+                    <div class="user-menu-section" id="user-menu-section">
+                        <div class="user-menu" id="user-menu">
+                            <span id="user-greeting">Hi, Guest</span>
+                            <img src="https://i.pravatar.cc/150?img=3" alt="Avatar" class="user-avatar" id="nav-avatar">
+                            <i class="fas fa-chevron-down text-sm"></i>
+                            <div class="dropdown-menu" id="user-dropdown">
+                                <a href="dashboard.html">Dashboard</a>
+                                <a href="profile.html?id=me">My Profile</a>
+                                <a href="#" id="logout-btn">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="page-content animate-fade-in" id="profile-content">
+                <!-- Profile Header -->
+                <div class="card mb-4">
+                    <div class="flex gap-4 items-center" style="flex-wrap: wrap;">
+                        <img id="prof-avatar" src="" alt="Avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
+                        <div style="flex: 1;">
+                            <h1 id="prof-name">Loading...</h1>
+                            <p class="text-secondary" id="prof-title" style="font-size: 1.2rem;"></p>
+                            <div class="mt-2 text-sm" style="color: #fbbf24;">
+                                <i class="fas fa-star"></i> <span id="prof-rating">0.0</span> (<span id="prof-rating-count">0</span> reviews)
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="rate-btn" class="btn btn-primary" style="display: none;">Rate User</button>
+                            <a href="#" id="prof-email-btn" class="btn btn-outline"><i class="fas fa-envelope"></i> Contact</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3">
+                    <div class="col-span-1" style="grid-column: span 1;">
+                        <div class="card mb-4">
+                            <h3 class="mb-2">About Me</h3>
+                            <p id="prof-bio" class="text-secondary"></p>
+                        </div>
+                        <div class="card mb-4">
+                            <h3 class="mb-2">Skills</h3>
+                            <div id="prof-skills" class="flex gap-2" style="flex-wrap: wrap;"></div>
+                        </div>
+                        <div class="card mb-4">
+                            <h3 class="mb-2">Contact Info</h3>
+                            <p class="text-sm text-secondary"><i class="fas fa-envelope"></i> <span id="prof-email">Hidden</span></p>
+                            <p class="text-sm text-secondary mt-2"><i class="fas fa-phone"></i> <span id="prof-phone">Hidden</span></p>
+                        </div>
+                    </div>
+                    <div class="col-span-2" style="grid-column: span 2;">
+                        <div class="card mb-4">
+                            <h3 class="mb-4">Experience</h3>
+                            <div id="prof-exp"></div>
+                        </div>
+                        <div class="card mb-4">
+                            <h3 class="mb-4">Education</h3>
+                            <div id="prof-edu"></div>
+                        </div>
+                        <div class="card mb-4">
+                            <h3 class="mb-4">Projects</h3>
+                            <div class="grid grid-cols-2" id="prof-proj"></div>
+                        </div>
+                        
+                        <div class="card">
+                            <h3 class="mb-4">Comments</h3>
+                            <div id="prof-comments" class="mb-4"></div>
+                            
+                            <form id="comment-form" style="display: none;">
+                                <div class="form-group">
+                                    <textarea id="comment-text" class="form-control" rows="3" placeholder="Leave a comment..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Post Comment</button>
+                            </form>
+                            <p id="login-to-comment" class="text-secondary text-sm">Please <a href="login.html">login</a> to leave a comment.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rating Modal (Hidden by default) -->
+            <div id="rating-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+                <div class="card" style="width: 300px; text-align: center;">
+                    <h3 class="mb-4">Rate User</h3>
+                    <select id="rating-val" class="form-control mb-4">
+                        <option value="5">5 - Excellent</option>
+                        <option value="4">4 - Very Good</option>
+                        <option value="3">3 - Good</option>
+                        <option value="2">2 - Fair</option>
+                        <option value="1">1 - Poor</option>
+                    </select>
+                    <div class="flex justify-between gap-2">
+                        <button id="cancel-rate" class="btn btn-outline w-full">Cancel</button>
+                        <button id="submit-rate" class="btn btn-primary w-full">Submit</button>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <p>&copy; 2026 PortfolioHub. All rights reserved.</p>
+            </footer>
+        </main>
+    </div>
+    <script src="js/main.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+</html>
