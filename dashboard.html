@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PortfolioHub | Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-logo">
+                    <i class="fas fa-layer-group"></i> PortHub
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="profile.html?id=me"><i class="fas fa-user"></i> My Profile</a></li>
+                    <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                    <li style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                        <a href="explore.html"><i class="fas fa-compass"></i> Explore</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="main-content">
+            <!-- Navbar -->
+            <nav class="navbar">
+                <div class="nav-left">
+                    <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>Dashboard</h2>
+                </div>
+                <div class="nav-right">
+                    <button class="theme-toggle" id="theme-toggle"><i class="fas fa-moon" id="theme-icon"></i></button>
+                    <div class="user-menu-section" id="user-menu-section">
+                        <div class="user-menu" id="user-menu">
+                            <span id="user-greeting">Hi, User</span>
+                            <img src="https://i.pravatar.cc/150?img=3" alt="Avatar" class="user-avatar" id="nav-avatar">
+                            <i class="fas fa-chevron-down text-sm"></i>
+                            <div class="dropdown-menu" id="user-dropdown">
+                                <a href="profile.html?id=me">My Profile</a>
+                                <a href="settings.html">Settings</a>
+                                <hr>
+                                <a href="#" id="logout-btn">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="page-content animate-fade-in">
+                <div class="grid grid-cols-3">
+                    <div class="col-span-1" style="grid-column: span 1;">
+                        <div class="card text-center mb-4">
+                            <img id="dash-avatar" src="" alt="Avatar" style="width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 15px; object-fit: cover;">
+                            <h3 id="dash-name">Loading...</h3>
+                            <p id="dash-title" class="text-secondary mb-4"></p>
+                            <a href="settings.html" class="btn btn-outline w-full mb-2">Edit Profile</a>
+                            <a href="profile.html?id=me" class="btn btn-primary w-full">View Public Profile</a>
+                        </div>
+                        <div class="card mb-4">
+                            <h4 class="mb-2">Stats</h4>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-secondary">Profile Views</span>
+                                <strong>124</strong>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-secondary">Rating</span>
+                                <strong><i class="fas fa-star" style="color: #fbbf24;"></i> <span id="dash-rating">0</span></strong>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-secondary">Projects</span>
+                                <strong id="dash-project-count">0</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-span-2" style="grid-column: span 2;">
+                        <div class="card mb-4">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3>Recent Notifications</h3>
+                                <button class="btn btn-outline" style="padding: 5px 10px; font-size: 0.8rem;">Clear All</button>
+                            </div>
+                            <div id="dash-notifications">
+                                <div class="mb-3 pb-3" style="border-bottom: 1px solid var(--border-color);">
+                                    <p class="text-sm"><strong>Jane Smith</strong> rated your profile 5 stars.</p>
+                                    <span class="text-secondary" style="font-size: 0.75rem;">2 hours ago</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm"><strong>System</strong> Welcome to PortfolioHub!</p>
+                                    <span class="text-secondary" style="font-size: 0.75rem;">1 day ago</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3>Your Projects Preview</h3>
+                                <a href="settings.html" class="btn btn-primary" style="padding: 5px 15px; font-size: 0.8rem;">Manage Projects</a>
+                            </div>
+                            <div class="grid grid-cols-2" id="dash-projects">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <p>&copy; 2026 PortfolioHub. All rights reserved.</p>
+            </footer>
+        </main>
+    </div>
+    <script src="js/main.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
