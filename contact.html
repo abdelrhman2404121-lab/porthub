@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PortfolioHub | Contact</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-logo">
+                    <i class="fas fa-layer-group"></i> PortHub
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="explore.html"><i class="fas fa-compass"></i> Explore</a></li>
+                    <li><a href="projects.html"><i class="fas fa-briefcase"></i> Projects</a></li>
+                    <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+                    <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="main-content">
+            <!-- Navbar -->
+            <nav class="navbar">
+                <div class="nav-left">
+                    <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <form class="search-bar" id="global-search-form">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search...">
+                    </form>
+                </div>
+                <div class="nav-right">
+                    <button class="theme-toggle" id="theme-toggle"><i class="fas fa-moon" id="theme-icon"></i></button>
+                    <div class="auth-links flex gap-2" id="auth-links" style="display: none;">
+                        <a href="login.html" class="btn btn-outline">Login</a>
+                        <a href="register.html" class="btn btn-primary">Register</a>
+                    </div>
+                    <div class="user-menu-section" id="user-menu-section">
+                        <div class="user-menu" id="user-menu">
+                            <span id="user-greeting">Hi, Guest</span>
+                            <img src="https://i.pravatar.cc/150?img=3" alt="Avatar" class="user-avatar" id="nav-avatar">
+                            <i class="fas fa-chevron-down text-sm"></i>
+                            <div class="dropdown-menu" id="user-dropdown">
+                                <a href="dashboard.html">Dashboard</a>
+                                <a href="profile.html?id=me">My Profile</a>
+                                <a href="#" id="logout-btn">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="page-content animate-fade-in">
+                <div class="card" style="max-width: 600px; margin: 0 auto;">
+                    <h2 class="mb-4 text-center">Contact Us</h2>
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="contact-name" class="form-control" placeholder="Your Name">
+                            <span class="error-message" id="name-error">Name is required</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="contact-email" class="form-control" placeholder="Your Email">
+                            <span class="error-message" id="email-error">Valid email is required</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea id="contact-message" class="form-control" rows="5" placeholder="How can we help?"></textarea>
+                            <span class="error-message" id="message-error">Message cannot be empty</span>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full">Send Message</button>
+                    </form>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <p>&copy; 2026 PortfolioHub. All rights reserved.</p>
+            </footer>
+        </main>
+    </div>
+    <script src="js/main.js"></script>
+    <script src="js/contact.js"></script>
+</body>
+</html>
