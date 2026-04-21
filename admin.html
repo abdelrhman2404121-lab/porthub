@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -206,4 +207,192 @@
     <script src="js/main.js"></script>
     <script src="js/admin.js"></script>
 </body>
+=======
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PortfolioHub | Admin Control Panel</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/adminstyle.css" />
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Admin Sidebar -->
+      <aside class="sidebar admin-sidebar" id="sidebar">
+        <div class="sidebar-header" style="border-bottom-color: #334155">
+          <a href="admin.html" class="sidebar-logo text-white">
+            <i class="fas fa-shield-alt" style="color: #dc2626"></i> Admin CP
+          </a>
+        </div>
+        <nav class="sidebar-nav">
+          <ul>
+            <li>
+              <a href="#" class="active" id="nav-users"
+                ><i class="fas fa-users"></i> Manage Users</a
+              >
+            </li>
+            <li>
+              <a href="#" id="nav-projects"
+                ><i class="fas fa-briefcase"></i> Manage Projects</a
+              >
+            </li>
+            <li style="margin-top: 50px">
+              <a href="index.html"
+                ><i class="fas fa-arrow-left"></i> Exit to Main Site</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <main class="main-content" id="main-content">
+        <!-- Admin Navbar -->
+        <nav class="navbar admin-navbar">
+          <div class="nav-left">
+            <button class="menu-toggle" id="menu-toggle">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h2>System Administration</h2>
+          </div>
+          <div class="nav-right">
+            <div class="user-menu">
+              <span>Admin <span class="badge-admin">ROOT</span></span>
+              <img
+                src="https://i.pravatar.cc/150?img=12"
+                alt="Admin"
+                class="user-avatar"
+              />
+            </div>
+          </div>
+        </nav>
+
+        <div class="page-content animate-fade-in">
+          <!-- Users View -->
+          <div id="view-users" class="card mb-4">
+            <div class="flex justify-between items-center mb-4">
+              <h3>Registered Users</h3>
+              <input
+                type="text"
+                id="admin-user-search"
+                class="form-control"
+                placeholder="Search user..."
+                style="width: 250px"
+              />
+            </div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Projects</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-user-table">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Projects View (hidden by default) -->
+          <div id="view-projects" class="card" style="display: none">
+            <div class="flex justify-between items-center mb-4">
+              <h3>All Projects</h3>
+              <input
+                type="text"
+                id="admin-proj-search"
+                class="form-control"
+                placeholder="Search project..."
+                style="width: 250px"
+              />
+            </div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-proj-table">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit User Modal -->
+        <div
+          id="edit-modal"
+          style="
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+          "
+        >
+          <div class="card" style="width: 400px">
+            <h3 class="mb-4">Edit User</h3>
+            <form id="admin-edit-form">
+              <input type="hidden" id="edit-id" />
+              <div class="form-group">
+                <label>Name</label>
+                <input
+                  type="text"
+                  id="edit-name"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  id="edit-email"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="flex gap-2 mt-4">
+                <button
+                  type="button"
+                  class="btn btn-outline w-full"
+                  id="close-edit"
+                >
+                  Cancel
+                </button>
+                <button type="submit" class="btn btn-primary w-full">
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Using custom notification script instead of main to isolate logic slightly, though we can reuse showNotification -->
+    <script src="js/main.js"></script>
+    <script src="js/admin.js"></script>
+  </body>
+>>>>>>> a76c3644d44753035c109107b939a975a90f2a68
 </html>
