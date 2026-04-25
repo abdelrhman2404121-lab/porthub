@@ -1,13 +1,28 @@
 // main.js - Shared logic
 
 // --- Mock Data Initialization ---
+const defaultAdmin = {
+    id: 999,
+    name: "System Admin",
+    title: "Administrator",
+    email: "admin@admin.com",
+    phone: "-",
+    bio: "Maintains the PortfolioHub system.",
+    password: "admin",
+    role: "admin",
+    avatar: "https://i.pravatar.cc/150?img=12",
+    skills: [], experience: [], education: [], rating: 5, ratingCount: 0, projects: [], comments: []
+};
+
 const defaultUsers = [
+    defaultAdmin,
     {
         id: 1,
         name: "John Doe",
         title: "Frontend Developer",
         email: "john@example.com",
         phone: "+1 234 567 890",
+        password: "password",
         bio: "Passionate frontend developer specializing in React and modern UI/UX.",
         avatar: "https://i.pravatar.cc/150?img=11",
         skills: ["HTML", "CSS", "JavaScript", "React"],
@@ -29,6 +44,7 @@ const defaultUsers = [
         title: "UI/UX Designer",
         email: "jane@example.com",
         phone: "+1 987 654 321",
+        password: "password",
         bio: "Creative designer focused on minimalist and functional aesthetics.",
         avatar: "https://i.pravatar.cc/150?img=5",
         skills: ["Figma", "Sketch", "CSS", "Design Systems"],
@@ -45,10 +61,28 @@ const defaultUsers = [
 
 if (!localStorage.getItem('users')) {
     localStorage.setItem('users', JSON.stringify(defaultUsers));
+} else {
+    let existingUsers = JSON.parse(localStorage.getItem('users'));
+    if (!existingUsers.find(u => u.role === 'admin')) {
+        existingUsers.push(defaultAdmin);
+        localStorage.setItem('users', JSON.stringify(existingUsers));
+    }
 }
 
 // Current logged in user state
 let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+
+if (currentUser) {
+    const allUsers = JSON.parse(localStorage.getItem('users')) || [];
+    const dbUser = allUsers.find(u => u.id === currentUser.id);
+    if (dbUser && dbUser.blocked) {
+        localStorage.removeItem('currentUser');
+        currentUser = null;
+        if (!window.location.pathname.endsWith('login.html') && !window.location.pathname.endsWith('index.html') && !window.location.pathname.endsWith('register.html')) {
+            window.location.href = 'login.html';
+        }
+    }
+}
 
 // --- Theme Management ---
 function initTheme() {

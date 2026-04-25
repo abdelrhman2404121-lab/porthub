@@ -12,8 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let isValid = true;
 
-        if (!name) {
-            document.getElementById('reg-name-error').style.display = 'block';
+        if (!name || /\d/.test(name)) {
+            const nameErr = document.getElementById('reg-name-error');
+            nameErr.textContent = 'Name is required and cannot contain numbers';
+            nameErr.style.display = 'block';
             isValid = false;
         } else {
             document.getElementById('reg-name-error').style.display = 'none';
@@ -27,8 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('reg-email-error').style.display = 'none';
         }
 
-        if (!password || password.length < 6) {
-            document.getElementById('reg-password-error').style.display = 'block';
+        const passRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d\w\W]{8,}$/;
+        if (!password || !passRegex.test(password)) {
+            const passErr = document.getElementById('reg-password-error');
+            passErr.textContent = 'Password must be at least 8 chars, include a letter and a number';
+            passErr.style.display = 'block';
             isValid = false;
         } else {
             document.getElementById('reg-password-error').style.display = 'none';
@@ -55,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 id: Date.now(),
                 name: name,
                 email: email,
+                password: password,
                 title: "New Member",
                 bio: "I'm new here!",
                 avatar: `https://i.pravatar.cc/150?u=${email}`,

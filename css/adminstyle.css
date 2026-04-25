@@ -1,0 +1,159 @@
+/* Admin Specific Theme Overrides and Enhancements */
+
+:root {
+  /* Give the admin panel a distinct, premium dark/red theme */
+  --admin-primary: #111827;
+  --admin-sidebar: #1f2937;
+  --admin-accent: #ef4444; /* Vibrant red */
+  --admin-accent-hover: #dc2626;
+  --admin-text: #f9fafb;
+  --admin-text-muted: #9ca3af;
+  --admin-border: #374151;
+}
+
+/* Sidebar styling overrides */
+.admin-sidebar {
+  background-color: var(--admin-sidebar);
+  border-right: none;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.admin-sidebar .sidebar-logo {
+  color: var(--admin-text);
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.admin-sidebar .sidebar-logo i {
+  color: var(--admin-accent);
+  filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.5));
+}
+
+.admin-sidebar .sidebar-header {
+  border-bottom: 1px solid var(--admin-border) !important;
+}
+
+.admin-sidebar .sidebar-nav ul li a {
+  color: var(--admin-text-muted) !important;
+  border-radius: 0 20px 20px 0;
+  margin-right: 15px;
+  transition: all 0.3s ease;
+}
+
+.admin-sidebar .sidebar-nav ul li a:hover,
+.admin-sidebar .sidebar-nav ul li a.active {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  color: var(--admin-accent) !important;
+  border-right: 4px solid var(--admin-accent) !important;
+}
+
+/* Navbar */
+.admin-navbar {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+[data-theme="dark"] .admin-navbar {
+  background: rgba(15, 23, 42, 0.95);
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.badge-admin {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.65rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin-left: 8px;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
+
+/* Tables */
+.table-responsive {
+  overflow-x: auto;
+  width: 100%;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 0 1px var(--border-color);
+  background-color: var(--surface-color);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 16px 20px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+th {
+  background-color: var(--bg-color);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="dark"] tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Action Buttons */
+.action-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btns button {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-danger {
+  background-color: var(--admin-accent);
+  color: white;
+  border: none;
+}
+
+.btn-danger:hover {
+  background-color: var(--admin-accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+}
+
+.btn-warning {
+  background-color: #f59e0b;
+  color: white;
+  border: none;
+}
+
+.btn-warning:hover {
+  background-color: #d97706;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2);
+}
+
+/* Edit Modal */
+#edit-modal .card {
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border-color);
+}

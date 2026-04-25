@@ -32,12 +32,24 @@ document.addEventListener('DOMContentLoaded', () => {
             // For demo purposes, we accept 'password' for any existing user, or specific check
             const user = users.find(u => u.email === email);
             
-            // Hardcode demo pass logic
-            if (user && (password === 'password' || password.length > 0)) {
+            // Verify password
+            if (user && user.password === password) {
+                if (user.blocked) {
+                    const errorDiv = document.getElementById('general-error');
+                    errorDiv.textContent = 'Your account has been blocked by an administrator.';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+                
                 // Login success
                 document.getElementById('general-error').style.display = 'none';
                 localStorage.setItem('currentUser', JSON.stringify(user));
-                window.location.href = 'dashboard.html';
+                
+                if (user.role === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'dashboard.html';
+                }
             } else {
                 document.getElementById('general-error').style.display = 'block';
             }

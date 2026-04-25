@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const projContainer = document.getElementById('prof-proj');
     if (profileUser.projects && profileUser.projects.length > 0) {
         projContainer.innerHTML = profileUser.projects.map(p => `
-            <div style="padding: 15px; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+            <div style="padding: 15px; background-color: var(--bg-color); border-radius: var(--radius-md);">
                 <h4>${p.title}</h4>
                 <p class="text-secondary text-sm mb-2">${p.desc}</p>
                 <a href="${p.link}" class="text-sm" target="_blank">View Project</a>

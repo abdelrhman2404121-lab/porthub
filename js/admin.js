@@ -1,5 +1,11 @@
 // admin.js
 document.addEventListener('DOMContentLoaded', () => {
+    let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (!currentUser || currentUser.role !== 'admin') {
+        window.location.href = 'login.html';
+        return;
+    }
+
     // Nav logic
     const navUsers = document.getElementById('nav-users');
     const navProjects = document.getElementById('nav-projects');

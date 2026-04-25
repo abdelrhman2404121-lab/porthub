@@ -38,7 +38,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('form-account').addEventListener('submit', (e) => {
         e.preventDefault();
-        currentUser.name = document.getElementById('set-name').value.trim();
+        const newName = document.getElementById('set-name').value.trim();
+        
+        if (!newName || /\d/.test(newName)) {
+            showNotification('Name is required and cannot contain numbers', 'error');
+            return;
+        }
+        
+        currentUser.name = newName;
         currentUser.title = document.getElementById('set-title').value.trim();
         currentUser.email = document.getElementById('set-email').value.trim();
         currentUser.phone = document.getElementById('set-phone').value.trim();
@@ -78,8 +85,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         errorDiv.style.display = 'none';
 
-        if (newPass.length < 6) {
-            errorDiv.textContent = 'New password must be at least 6 characters.';
+        const passRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d\w\W]{8,}$/;
+        if (!passRegex.test(newPass)) {
+            errorDiv.textContent = 'New password must be at least 8 chars, include a letter and a number.';
             errorDiv.style.display = 'block';
             return;
         }
@@ -90,7 +98,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Mock update
+        if (currentUser.password && curPass !== currentUser.password) {
+            errorDiv.textContent = 'Current password is incorrect.';
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        // Update password
+        currentUser.password = newPass;
+        saveUser();
         showNotification('Password changed successfully!');
         document.getElementById('form-security').reset();
     });
@@ -138,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const projContainer = document.getElementById('set-projects-list');
         if (currentUser.projects && currentUser.projects.length > 0) {
             projContainer.innerHTML = currentUser.projects.map((p) => `
-                <div class="mb-3 p-3" style="border: 1px solid var(--border-color); border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center;">
+                <div class="mb-3 p-3" style="background-color: var(--bg-color); border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <h4 style="margin-bottom: 5px;">${p.title}</h4>
                         <p class="text-sm text-secondary" style="margin-bottom: 5px;">${p.desc}</p>
