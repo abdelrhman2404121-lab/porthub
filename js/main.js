@@ -8,7 +8,7 @@ const defaultAdmin = {
     email: "admin@admin.com",
     phone: "-",
     bio: "Maintains the PortfolioHub system.",
-    password: "admin",
+    password: "admin123",
     role: "admin",
     avatar: "https://i.pravatar.cc/150?img=12",
     skills: [], experience: [], education: [], rating: 5, ratingCount: 0, projects: [], comments: []
@@ -63,8 +63,13 @@ if (!localStorage.getItem('users')) {
     localStorage.setItem('users', JSON.stringify(defaultUsers));
 } else {
     let existingUsers = JSON.parse(localStorage.getItem('users'));
-    if (!existingUsers.find(u => u.role === 'admin')) {
+    let adminUser = existingUsers.find(u => u.role === 'admin');
+    if (!adminUser) {
         existingUsers.push(defaultAdmin);
+        localStorage.setItem('users', JSON.stringify(existingUsers));
+    } else if (adminUser.password === 'admin') {
+        // Force update password to comply with new validation
+        adminUser.password = 'admin123';
         localStorage.setItem('users', JSON.stringify(existingUsers));
     }
 }
