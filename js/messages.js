@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentUser = JSON.parse(localStorage.getItem('currentUser'));
     let users = JSON.parse(localStorage.getItem('users')) || [];
     let messages = JSON.parse(localStorage.getItem('messages')) || [];
+    let chats = JSON.parse(localStorage.getItem(`chats_${currentUser ? currentUser.id : ''}`)) || [];
     let activeChatUserId = null;
 
     const chatList = document.getElementById('chat-list');
@@ -26,27 +27,73 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('messages', JSON.stringify(messages));
     }
 
+    function saveChats() {
+        localStorage.setItem(`chats_${currentUser.id}`, JSON.stringify(chats));
+    }
+
+    function updateChat(userId, lastMsg, lastTime) {
+        let chat = chats.find(c => c.userId === userId);
+        if (!chat) {
+            chat = { userId, lastMessage: lastMsg, lastTime, unreadCount: 0, lastReadTime: '' };
+            chats.push(chat);
+        } else {
+            chat.lastMessage = lastMsg;
+            chat.lastTime = lastTime;
+        }
+        saveChats();
+    }
+
     function renderChatList() {
         const otherUsers = users.filter(user => user.id !== currentUser.id);
-        let html = '';
 
+        // Update chats
         otherUsers.forEach(user => {
-            const conversationMessages = messages.filter(msg =>
+            const convMsgs = messages.filter(msg =>
                 (msg.senderId === currentUser.id && msg.receiverId === user.id) ||
                 (msg.senderId === user.id && msg.receiverId === currentUser.id)
             ).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-            const lastMessage = conversationMessages[conversationMessages.length - 1];
-            const lastMsgText = lastMessage ? lastMessage.text : 'No messages yet';
-            const isActive = activeChatUserId === user.id;
+            const lastMsg = convMsgs[convMsgs.length - 1];
+            let chat = chats.find(c => c.userId === user.id);
+            if (!chat) {
+                chat = {
+                    userId: user.id,
+                    lastMessage: lastMsg ? lastMsg.text : 'No messages yet',
+                    lastTime: lastMsg ? lastMsg.timestamp : '',
+                    unreadCount: 0,
+                    lastReadTime: ''
+                };
+                chats.push(chat);
+            } else {
+                if (lastMsg && new Date(lastMsg.timestamp) > new Date(chat.lastTime || 0)) {
+                    chat.lastMessage = lastMsg.text;
+                    chat.lastTime = lastMsg.timestamp;
+                }
+                // Recalculate unreadCount
+                const lastRead = new Date(chat.lastReadTime || 0);
+                chat.unreadCount = convMsgs.filter(msg => msg.senderId === user.id && new Date(msg.timestamp) > lastRead).length;
+            }
+        });
+        saveChats();
 
+        // Sort chats by lastTime descending
+        chats.sort((a, b) => new Date(b.lastTime || 0) - new Date(a.lastTime || 0));
+
+        // Render
+        let html = '';
+        chats.forEach(chat => {
+            const user = users.find(u => u.id === chat.userId);
+            if (!user) return;
+            const isActive = activeChatUserId === chat.userId;
+            const unread = chat.unreadCount;
             html += `
-                <div class="chat-item ${isActive ? 'active' : ''}" data-user-id="${user.id}">
+                <div class="chat-item ${isActive ? 'active' : ''} ${unread > 0 ? 'unread' : ''}" data-user-id="${chat.userId}">
                     <img src="${user.avatar}" alt="${user.name}">
                     <div class="chat-info">
                         <div class="chat-name">${user.name}</div>
-                        <div class="chat-last-msg">${lastMsgText}</div>
+                        <div class="chat-last-msg">${chat.lastMessage}</div>
                     </div>
+                    ${unread > 0 ? `<span class="unread-badge">${unread}</span>` : ''}
                 </div>
             `;
         });
@@ -66,6 +113,14 @@ document.addEventListener('DOMContentLoaded', () => {
         activeChatUserId = userId;
         const user = users.find(u => u.id === userId);
         if (!user) return;
+
+        // Reset unread
+        const chat = chats.find(c => c.userId === userId);
+        if (chat) {
+            chat.unreadCount = 0;
+            chat.lastReadTime = new Date().toISOString();
+            saveChats();
+        }
 
         chatAvatar.src = user.avatar;
         chatName.textContent = user.name;
@@ -116,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         messages.push(newMessage);
         saveMessages();
+        updateChat(activeChatUserId, newMessage.text, newMessage.timestamp);
         messageInput.value = '';
         renderMessages();
         renderChatList(); // Update last message
