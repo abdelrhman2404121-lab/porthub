@@ -206,4 +206,118 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
         }
     }
+
+    // Upload Components
+    function setupUpload(dropAreaId, fileInputId, fileInfoId, errorId, allowedTypes, maxSizeMB, isMultiple = false) {
+        const dropArea = document.getElementById(dropAreaId);
+        const fileInput = document.getElementById(fileInputId);
+        const fileInfo = document.getElementById(fileInfoId);
+        const errorDiv = document.getElementById(errorId);
+
+        // Drag and drop events
+        ["dragenter", "dragover"].forEach(event => {
+            dropArea.addEventListener(event, e => {
+                e.preventDefault();
+                dropArea.classList.add("dragover");
+            });
+        });
+
+        ["dragleave", "drop"].forEach(event => {
+            dropArea.addEventListener(event, () => {
+                dropArea.classList.remove("dragover");
+            });
+        });
+
+        // Drop event
+        dropArea.addEventListener("drop", e => {
+            e.preventDefault();
+            dropArea.classList.remove("dragover");
+            const files = Array.from(e.dataTransfer.files);
+            handleFiles(files, allowedTypes, maxSizeMB, isMultiple);
+        });
+
+        // Click to upload
+        dropArea.addEventListener("click", () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener("change", () => {
+            const files = Array.from(fileInput.files);
+            handleFiles(files, allowedTypes, maxSizeMB, isMultiple);
+        });
+
+        function handleFiles(files, allowedTypes, maxSizeMB, isMultiple) {
+            errorDiv.style.display = 'none';
+            errorDiv.textContent = '';
+
+            if (!isMultiple && files.length > 1) {
+                showError('Please select only one file');
+                return;
+            }
+
+            const validFiles = [];
+            const errors = [];
+
+            files.forEach(file => {
+                if (!allowedTypes.includes(file.type.toLowerCase()) && !allowedTypes.includes('.' + file.name.split('.').pop().toLowerCase())) {
+                    errors.push(`${file.name}: Invalid file type`);
+                } else if (file.size > maxSizeMB * 1024 * 1024) {
+                    errors.push(`${file.name}: File too large (max ${maxSizeMB}MB)`);
+                } else {
+                    validFiles.push(file);
+                }
+            });
+
+            if (errors.length > 0) {
+                showError(errors.join('<br>'));
+                return;
+            }
+
+            displayFiles(validFiles, isMultiple);
+        }
+
+        function showError(message) {
+            errorDiv.innerHTML = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function displayFiles(files, isMultiple) {
+            if (isMultiple) {
+                fileInfo.innerHTML = '';
+                files.forEach(file => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+
+                    if (file.type.startsWith('image/')) {
+                        const img = document.createElement('img');
+                        img.className = 'file-preview';
+                        img.src = URL.createObjectURL(file);
+                        fileItem.appendChild(img);
+                    } else {
+                        const icon = document.createElement('i');
+                        icon.className = 'fas fa-file-pdf';
+                        fileItem.appendChild(icon);
+                    }
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.textContent = file.name;
+                    fileItem.appendChild(nameSpan);
+
+                    fileInfo.appendChild(fileItem);
+                });
+            } else {
+                const file = files[0];
+                document.getElementById(fileInfoId.replace('-info', '-file-name')).textContent = file.name;
+            }
+
+            fileInfo.style.display = 'block';
+        }
+    }
+
+    // Setup CV Upload (PDF only)
+    setupUpload('cv-drop-area', 'cv-file-input', 'cv-file-info', 'cv-error', ['application/pdf', '.pdf'], 50, false);
+
+    // Setup Projects Upload (Images + PDF)
+    setupUpload('projects-drop-area', 'projects-file-input', 'projects-files-info', 'projects-error', 
+                ['image/png', 'image/jpg', 'image/jpeg', '.png', '.jpg', '.jpeg', 'application/pdf', '.pdf'], 50, true);
 });

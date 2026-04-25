@@ -98,6 +98,24 @@
                         <!-- Account Section -->
                         <div id="section-account" class="card settings-section active">
                             <h3 class="mb-4">Account & Profile Information</h3>
+
+                            <!-- CV Upload -->
+                            <div class="upload-section mb-4">
+                                <h4 class="mb-3">Upload CV</h4>
+                                <div class="upload-drop-area" id="cv-drop-area">
+                                    <div class="upload-content">
+                                        <i class="fas fa-file-pdf upload-icon"></i>
+                                        <p class="upload-text">Drag & drop your CV here or <span class="upload-link">click to browse</span></p>
+                                        <p class="upload-subtext">Only PDF files, max 50MB</p>
+                                        <input type="file" id="cv-file-input" accept=".pdf" style="display: none;">
+                                    </div>
+                                </div>
+                                <div id="cv-file-info" class="file-info" style="display: none;">
+                                    <p><i class="fas fa-file-pdf"></i> <span id="cv-file-name"></span></p>
+                                </div>
+                                <div id="cv-error" class="error-message" style="display: none;"></div>
+                            </div>
+
                             <form id="form-account">
                                 <div class="grid grid-cols-2">
                                     <div class="form-group">
@@ -143,6 +161,22 @@
                             </form>
 
                             <h3 class="mb-4 pt-4" style="border-top: 1px solid var(--border-color);">Projects</h3>
+
+                            <!-- Projects Upload -->
+                            <div class="upload-section mb-4">
+                                <h4 class="mb-3">Projects</h4>
+                                <div class="upload-drop-area" id="projects-drop-area">
+                                    <div class="upload-content">
+                                        <i class="fas fa-images upload-icon"></i>
+                                        <p class="upload-text">Drag & drop project files here or <span class="upload-link">click to browse</span></p>
+                                        <p class="upload-subtext">Images (PNG, JPG, JPEG) and PDF files, max 50MB each</p>
+                                        <input type="file" id="projects-file-input" accept=".png,.jpg,.jpeg,.pdf" multiple style="display: none;">
+                                    </div>
+                                </div>
+                                <div id="projects-files-info" class="files-info" style="display: none;"></div>
+                                <div id="projects-error" class="error-message" style="display: none;"></div>
+                            </div>
+
                             <div id="set-projects-list" class="mb-4"></div>
                             
                             <h4 class="mb-2">Add New Project</h4>
