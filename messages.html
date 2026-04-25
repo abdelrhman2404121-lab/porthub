@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PortfolioHub | Contact</title>
+    <title>PortfolioHub | Messages</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -23,12 +23,11 @@
                     <li><a href="projects.html"><i class="fas fa-briefcase"></i> Projects</a></li>
                     <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
                     <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
-                    <li><a href="messages.html"><i class="fas fa-comments"></i> Messages</a></li>
+                    <li><a href="messages.html" class="active"><i class="fas fa-comments"></i> Messages</a></li>
                 </ul>
             </nav>
         </aside>
 
-        <!-- Main Content -->
         <main class="main-content" id="main-content">
             <!-- Navbar -->
             <nav class="navbar">
@@ -36,7 +35,7 @@
                     <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
                     <form class="search-bar" id="global-search-form">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search...">
+                        <input type="text" placeholder="Search messages...">
                     </form>
                 </div>
                 <div class="nav-right">
@@ -61,35 +60,41 @@
             </nav>
 
             <div class="page-content animate-fade-in">
-                <div class="card" style="max-width: 600px; margin: 0 auto;">
-                    <h2 class="mb-4 text-center">Contact Us</h2>
-                    <form id="contact-form">
-                        <div class="form-group">
-                            <label>Name</label>
-                            <input type="text" id="contact-name" class="form-control" placeholder="Your Name">
-                            <span class="error-message" id="name-error">Name is required</span>
+                <div class="messages-container">
+                    <!-- Chat List (Left Side) -->
+                    <div class="chat-list">
+                        <h3>Conversations</h3>
+                        <div id="chat-list" class="chat-list-items">
+                            <!-- Populated by JS -->
                         </div>
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" id="contact-email" class="form-control" placeholder="Your Email">
-                            <span class="error-message" id="email-error">Valid email is required</span>
+                    </div>
+
+                    <!-- Chat Window (Right Side) -->
+                    <div class="chat-window">
+                        <div id="chat-header" class="chat-header">
+                            <div id="chat-user-info">
+                                <img id="chat-avatar" src="" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+                                <span id="chat-name">Select a conversation</span>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Message</label>
-                            <textarea id="contact-message" class="form-control" rows="5" placeholder="How can we help?"></textarea>
-                            <span class="error-message" id="message-error">Message cannot be empty</span>
+                        <div id="chat-messages" class="chat-messages">
+                            <!-- Messages will be displayed here -->
                         </div>
-                        <button type="submit" class="btn btn-primary w-full">Send Message</button>
-                    </form>
+                        <div class="chat-input">
+                            <input type="text" id="message-input" placeholder="Type a message..." class="form-control">
+                            <button id="send-btn" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
                 </div>
             </div>
-
+            
             <footer class="footer">
                 <p>&copy; 2026 PortfolioHub. All rights reserved.</p>
             </footer>
         </main>
     </div>
     <script src="js/main.js"></script>
-    <script src="js/contact.js"></script>
+    <script src="js/messages.js"></script>
+    <script src="js/chatbot.js"></script>
 </body>
 </html>

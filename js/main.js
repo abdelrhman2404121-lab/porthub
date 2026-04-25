@@ -74,6 +74,10 @@ if (!localStorage.getItem('users')) {
     }
 }
 
+if (!localStorage.getItem('messages')) {
+    localStorage.setItem('messages', JSON.stringify([]));
+}
+
 // Current logged in user state
 let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
 

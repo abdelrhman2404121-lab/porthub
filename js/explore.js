@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="mb-4" style="color: #fbbf24;">
                             <i class="fas fa-star"></i> ${user.rating} (${user.ratingCount})
                         </div>
-                        <a href="profile.html?id=${user.id}" class="btn btn-outline w-full">View Profile</a>
+                        <a href="messages.html?user=${user.id}" class="btn btn-outline w-full">Message</a>
                     </div>
                 `;
             });
