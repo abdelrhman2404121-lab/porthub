@@ -1,183 +1,296 @@
-// messages.js
+﻿// messages.js
 document.addEventListener('DOMContentLoaded', () => {
-    let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    let users = JSON.parse(localStorage.getItem('users')) || [];
-    let messages = JSON.parse(localStorage.getItem('messages')) || [];
-    let chats = JSON.parse(localStorage.getItem(`chats_${currentUser ? currentUser.id : ''}`)) || [];
-    let activeChatUserId = null;
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    let chats = JSON.parse(localStorage.getItem('chats')) || {};
+    let requests = JSON.parse(localStorage.getItem('requests')) || {};
+    let activeChatId = null;
+    let pendingReceiverId = null;
 
     const chatList = document.getElementById('chat-list');
+    const requestsSection = document.getElementById('requests-section');
+    const requestsList = document.getElementById('requests-list');
     const chatMessages = document.getElementById('chat-messages');
     const messageInput = document.getElementById('message-input');
     const sendBtn = document.getElementById('send-btn');
     const chatAvatar = document.getElementById('chat-avatar');
     const chatName = document.getElementById('chat-name');
 
-    // Check URL params for initial user
     const urlParams = new URLSearchParams(window.location.search);
-    const initialUserId = urlParams.get('user');
+    const initialUserId = urlParams.get('user') ? parseInt(urlParams.get('user')) : null;
 
     if (!currentUser) {
-        // Redirect to login if not logged in
         window.location.href = 'login.html';
         return;
     }
 
-    function saveMessages() {
-        localStorage.setItem('messages', JSON.stringify(messages));
+    function saveData() {
+        localStorage.setItem('chats', JSON.stringify(chats));
+        localStorage.setItem('requests', JSON.stringify(requests));
     }
 
-    function saveChats() {
-        localStorage.setItem(`chats_${currentUser.id}`, JSON.stringify(chats));
+    function generateId() {
+        return Date.now().toString() + Math.random().toString(36).slice(2, 5);
     }
 
-    function updateChat(userId, lastMsg, lastTime) {
-        let chat = chats.find(c => c.userId === userId);
-        if (!chat) {
-            chat = { userId, lastMessage: lastMsg, lastTime, unreadCount: 0, lastReadTime: '' };
-            chats.push(chat);
-        } else {
-            chat.lastMessage = lastMsg;
-            chat.lastTime = lastTime;
+    function showNotification(message) {
+        alert(message);
+    }
+
+    function renderRequests() {
+        const incomingRequests = Object.values(requests).filter(req => req.receiver === currentUser.id);
+        if (incomingRequests.length === 0) {
+            requestsSection.style.display = 'none';
+            return;
         }
-        saveChats();
+
+        requestsSection.style.display = 'block';
+        let html = '';
+        incomingRequests.forEach(req => {
+            const sender = users.find(u => u.id === req.sender);
+            if (!sender) return;
+            html += `
+                <div class="request-item" data-request-id="${req.id}">
+                    <img src="${sender.avatar}" alt="${sender.name}">
+                    <div class="request-info">
+                        <div class="request-name">${sender.name}</div>
+                        <div class="request-preview">${req.message}</div>
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-primary accept-btn">Accept</button>
+                        <button class="btn btn-outline decline-btn">Decline</button>
+                    </div>
+                </div>
+            `;
+        });
+        requestsList.innerHTML = html;
+
+        document.querySelectorAll('.accept-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const requestId = e.target.closest('.request-item').dataset.requestId;
+                acceptRequest(requestId);
+            });
+        });
+
+        document.querySelectorAll('.decline-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const requestId = e.target.closest('.request-item').dataset.requestId;
+                declineRequest(requestId);
+            });
+        });
+    }
+
+    function acceptRequest(requestId) {
+        const request = requests[requestId];
+        if (!request || request.receiver !== currentUser.id) return;
+
+        let chatId = request.chatId;
+        if (!chatId || !chats[chatId]) {
+            chatId = generateId();
+            chats[chatId] = {
+                users: [request.sender, request.receiver],
+                messages: [{
+                    id: generateId(),
+                    senderId: request.sender,
+                    text: request.message,
+                    timestamp: request.time
+                }],
+                lastTime: request.time,
+                accepted: true,
+                createdBy: request.sender,
+                lastReadTime: Date.now()
+            };
+        } else {
+            chats[chatId].accepted = true;
+            chats[chatId].lastTime = request.time;
+        }
+
+        delete requests[requestId];
+        saveData();
+        renderRequests();
+        renderChatList();
+        openChat(chatId);
+    }
+
+    function declineRequest(requestId) {
+        const request = requests[requestId];
+        if (!request || request.receiver !== currentUser.id) return;
+
+        if (request.chatId && chats[request.chatId] && !chats[request.chatId].accepted) {
+            delete chats[request.chatId];
+        }
+
+        delete requests[requestId];
+        saveData();
+        renderRequests();
+        renderChatList();
     }
 
     function renderChatList() {
-        const otherUsers = users.filter(user => user.id !== currentUser.id);
+        const userChats = Object.entries(chats).filter(([chatId, chat]) =>
+            chat.users.includes(currentUser.id) && chat.accepted
+        );
 
-        // Update chats
-        otherUsers.forEach(user => {
-            const convMsgs = messages.filter(msg =>
-                (msg.senderId === currentUser.id && msg.receiverId === user.id) ||
-                (msg.senderId === user.id && msg.receiverId === currentUser.id)
-            ).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        userChats.sort((a, b) => b[1].lastTime - a[1].lastTime);
 
-            const lastMsg = convMsgs[convMsgs.length - 1];
-            let chat = chats.find(c => c.userId === user.id);
-            if (!chat) {
-                chat = {
-                    userId: user.id,
-                    lastMessage: lastMsg ? lastMsg.text : 'No messages yet',
-                    lastTime: lastMsg ? lastMsg.timestamp : '',
-                    unreadCount: 0,
-                    lastReadTime: ''
-                };
-                chats.push(chat);
-            } else {
-                if (lastMsg && new Date(lastMsg.timestamp) > new Date(chat.lastTime || 0)) {
-                    chat.lastMessage = lastMsg.text;
-                    chat.lastTime = lastMsg.timestamp;
-                }
-                // Recalculate unreadCount
-                const lastRead = new Date(chat.lastReadTime || 0);
-                chat.unreadCount = convMsgs.filter(msg => msg.senderId === user.id && new Date(msg.timestamp) > lastRead).length;
-            }
-        });
-        saveChats();
-
-        // Sort chats by lastTime descending
-        chats.sort((a, b) => new Date(b.lastTime || 0) - new Date(a.lastTime || 0));
-
-        // Render
         let html = '';
-        chats.forEach(chat => {
-            const user = users.find(u => u.id === chat.userId);
-            if (!user) return;
-            const isActive = activeChatUserId === chat.userId;
-            const unread = chat.unreadCount;
+        userChats.forEach(([chatId, chat]) => {
+            const otherUserId = chat.users.find(id => id !== currentUser.id);
+            const otherUser = users.find(u => u.id === otherUserId);
+            if (!otherUser) return;
+
+            const lastMessage = chat.messages[chat.messages.length - 1];
+            const lastMsgText = lastMessage ? lastMessage.text : 'No messages yet';
+            const lastReadTime = chat.lastReadTime || 0;
+            const unreadCount = chat.messages.filter(msg => msg.senderId === otherUserId && msg.timestamp > lastReadTime).length;
+            const isActive = activeChatId === chatId;
+
             html += `
-                <div class="chat-item ${isActive ? 'active' : ''} ${unread > 0 ? 'unread' : ''}" data-user-id="${chat.userId}">
-                    <img src="${user.avatar}" alt="${user.name}">
+                <div class="chat-item ${isActive ? 'active' : ''} ${unreadCount > 0 ? 'unread' : ''}" data-chat-id="${chatId}">
+                    <img src="${otherUser.avatar}" alt="${otherUser.name}">
                     <div class="chat-info">
-                        <div class="chat-name">${user.name}</div>
-                        <div class="chat-last-msg">${chat.lastMessage}</div>
+                        <div class="chat-name">${otherUser.name}${unreadCount > 0 ? ` <span class="unread-badge">${unreadCount}</span>` : ''}</div>
+                        <div class="chat-last-msg">${lastMsgText}</div>
                     </div>
-                    ${unread > 0 ? `<span class="unread-badge">${unread}</span>` : ''}
                 </div>
             `;
         });
 
         chatList.innerHTML = html;
-
-        // Add click listeners
         document.querySelectorAll('.chat-item').forEach(item => {
             item.addEventListener('click', () => {
-                const userId = parseInt(item.dataset.userId);
-                openChat(userId);
+                openChat(item.dataset.chatId);
             });
         });
     }
 
-    function openChat(userId) {
-        activeChatUserId = userId;
-        const user = users.find(u => u.id === userId);
-        if (!user) return;
+    function openChat(chatId) {
+        const chat = chats[chatId];
+        if (!chat || !chat.users.includes(currentUser.id) || !chat.accepted) return;
 
-        // Reset unread
-        const chat = chats.find(c => c.userId === userId);
-        if (chat) {
-            chat.unreadCount = 0;
-            chat.lastReadTime = new Date().toISOString();
-            saveChats();
-        }
+        activeChatId = chatId;
+        pendingReceiverId = null;
+        const otherUserId = chat.users.find(id => id !== currentUser.id);
+        const otherUser = users.find(u => u.id === otherUserId);
+        if (!otherUser) return;
+
+        chat.lastReadTime = Date.now();
+        saveData();
+
+        chatAvatar.src = otherUser.avatar;
+        chatName.textContent = otherUser.name;
+        renderChatList();
+        renderMessages();
+        messageInput.focus();
+    }
+
+    function openPendingChat(receiverId) {
+        activeChatId = null;
+        pendingReceiverId = receiverId;
+        const user = users.find(u => u.id === receiverId);
+        if (!user) return;
 
         chatAvatar.src = user.avatar;
         chatName.textContent = user.name;
-
         renderChatList();
         renderMessages();
         messageInput.focus();
     }
 
     function renderMessages() {
-        if (!activeChatUserId) {
-            chatMessages.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Select a conversation to start chatting</p>';
+        if (activeChatId) {
+            const chat = chats[activeChatId];
+            if (!chat) return;
+
+            let html = '';
+            chat.messages.forEach(msg => {
+                const isSent = msg.senderId === currentUser.id;
+                const time = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                html += `
+                    <div class="message-bubble ${isSent ? 'sent' : 'received'}">
+                        ${msg.text}
+                        <div class="message-time ${isSent ? 'sent' : 'received'}">${time}</div>
+                    </div>
+                `;
+            });
+
+            chatMessages.innerHTML = html;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
             return;
         }
 
-        const conversationMessages = messages.filter(msg =>
-            (msg.senderId === currentUser.id && msg.receiverId === activeChatUserId) ||
-            (msg.senderId === activeChatUserId && msg.receiverId === currentUser.id)
-        ).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        if (pendingReceiverId) {
+            const existingRequest = Object.values(requests).find(req => req.sender === currentUser.id && req.receiver === pendingReceiverId);
+            let html = '';
+            if (existingRequest) {
+                html = `
+                    <div class="message-bubble sent">
+                        ${existingRequest.message}
+                        <div class="message-time sent">${new Date(existingRequest.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                    </div>
+                `;
+            }
+            if (!html) {
+                html = '<p style="text-align: center; color: var(--text-secondary);">Write a message to send a request.</p>';
+            }
+            chatMessages.innerHTML = html;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return;
+        }
 
-        let html = '';
-        conversationMessages.forEach(msg => {
-            const isSent = msg.senderId === currentUser.id;
-            const time = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            html += `
-                <div class="message-bubble ${isSent ? 'sent' : 'received'}">
-                    ${msg.text}
-                    <div class="message-time ${isSent ? 'sent' : 'received'}">${time}</div>
-                </div>
-            `;
-        });
-
-        chatMessages.innerHTML = html;
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        chatMessages.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Select a conversation to start chatting</p>';
     }
 
     function sendMessage() {
         const text = messageInput.value.trim();
-        if (!text || !activeChatUserId) return;
+        if (!text) return;
 
-        const newMessage = {
-            id: Date.now(),
-            senderId: currentUser.id,
-            receiverId: activeChatUserId,
-            text: text,
-            timestamp: new Date().toISOString()
-        };
+        if (activeChatId) {
+            const chat = chats[activeChatId];
+            if (!chat) return;
 
-        messages.push(newMessage);
-        saveMessages();
-        updateChat(activeChatUserId, newMessage.text, newMessage.timestamp);
-        messageInput.value = '';
-        renderMessages();
-        renderChatList(); // Update last message
+            const newMessage = {
+                id: generateId(),
+                senderId: currentUser.id,
+                text,
+                timestamp: Date.now()
+            };
+            chat.messages.push(newMessage);
+            chat.lastTime = newMessage.timestamp;
+            saveData();
+            messageInput.value = '';
+            renderMessages();
+            renderChatList();
+            return;
+        }
+
+        if (pendingReceiverId) {
+            const existingRequest = Object.values(requests).find(req => req.sender === currentUser.id && req.receiver === pendingReceiverId);
+            if (existingRequest) {
+                existingRequest.message = text;
+                existingRequest.time = Date.now();
+            } else {
+                const requestId = generateId();
+                requests[requestId] = {
+                    id: requestId,
+                    sender: currentUser.id,
+                    receiver: pendingReceiverId,
+                    message: text,
+                    time: Date.now(),
+                    chatId: null
+                };
+            }
+
+            saveData();
+            renderMessages();
+            renderRequests();
+            renderChatList();
+            messageInput.value = '';
+            showNotification('Message request sent. Waiting for approval.');
+            return;
+        }
     }
 
-    // Event listeners
     sendBtn.addEventListener('click', sendMessage);
     messageInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
@@ -185,14 +298,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Initial render
+    renderRequests();
     renderChatList();
 
-    // Open initial chat if specified
     if (initialUserId) {
-        const userId = parseInt(initialUserId);
-        if (users.some(u => u.id === userId)) {
-            openChat(userId);
+        const existingChatId = Object.keys(chats).find(chatId => {
+            const chat = chats[chatId];
+            return chat.users.includes(currentUser.id) && chat.users.includes(initialUserId);
+        });
+
+        if (existingChatId) {
+            openChat(existingChatId);
+        } else {
+            openPendingChat(initialUserId);
         }
     }
 });
