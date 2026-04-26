@@ -6,6 +6,7 @@
     <title>PortfolioHub | Register</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
+      <link rel="stylesheet" href="css/chatbot.css">
 </head>
 <body>
     <div class="auth-container animate-fade-in" style="padding: 40px 20px;">
@@ -50,5 +51,23 @@
 
     <script src="js/main.js"></script>
     <script src="js/register.js"></script>
+    <!-- === AI CHATBOT WIDGET === -->
+<div id="ph-chatbot-widget">
+  <button id="ph-chat-toggle" type="button" title="AI Career Advisor">💬</button>
+  <div id="ph-chat-window" class="ph-chat-hidden">
+    <div id="ph-chat-header">
+      <span>AI Career Advisor</span>
+      <button id="ph-chat-close" type="button">✖</button>
+    </div>
+    <div id="ph-chat-messages"></div>
+    <div id="ph-chat-input-area">
+      <input type="text" id="ph-chat-input" placeholder="Ask about interviews, salaries..." autocomplete="off">
+      <button id="ph-chat-send" type="button">➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- === CHATBOT SCRIPT === -->
+<script src="js/chatbot.js"></script>
 </body>
 </html>
