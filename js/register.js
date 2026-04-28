@@ -2,8 +2,38 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('register-form');
 
+    // Radio button styling toggle
+    const radios = document.querySelectorAll('input[name="reg-role"]');
+    radios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            radios.forEach(r => {
+                const label = r.closest('label');
+                label.style.borderColor = 'var(--border-color)';
+                label.style.background = 'transparent';
+                
+                // Change icon colors back to secondary
+                const icon = label.querySelector('i');
+                icon.className = icon.className.replace('text-primary', 'text-secondary');
+            });
+            
+            const selectedLabel = e.target.closest('label');
+            selectedLabel.style.borderColor = 'var(--primary-color)';
+            selectedLabel.style.background = 'rgba(59,130,246,0.1)';
+            
+            // Highlight selected icon
+            const selectedIcon = selectedLabel.querySelector('i');
+            selectedIcon.className = selectedIcon.className.replace('text-secondary', 'text-primary');
+
+            // Update label text based on role
+            document.getElementById('name-label').textContent = e.target.value === 'company' ? 'Company Name' : 'Full Name';
+            document.getElementById('reg-name').placeholder = e.target.value === 'company' ? 'Acme Corp' : 'John Doe';
+        });
+    });
+
     form.addEventListener('submit', (e) => {
         e.preventDefault();
+
+        const role = document.querySelector('input[name="reg-role"]:checked').value;
 
         const name = document.getElementById('reg-name').value.trim();
         const email = document.getElementById('reg-email').value.trim();
@@ -56,22 +86,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const newUser = {
+            let baseUser = {
                 id: Date.now(),
                 name: name,
                 email: email,
                 password: password,
-                title: "New Member",
-                bio: "I'm new here!",
+                role: role,
+                title: role === 'company' ? "Innovative Company" : "New Member",
+                bio: role === 'company' ? "We are a company that builds great things!" : "I'm new here!",
                 avatar: `https://i.pravatar.cc/150?u=${email}`,
-                skills: [],
-                experience: [],
-                education: [],
-                projects: [],
                 comments: [],
                 rating: 0,
                 ratingCount: 0
             };
+
+            let newUser;
+            if (role === 'individual') {
+                newUser = {
+                    ...baseUser,
+                    skills: [],
+                    experience: [],
+                    education: [],
+                    projects: []
+                };
+            } else {
+                newUser = {
+                    ...baseUser,
+                    products: [],
+                    branches: [],
+                    timeline: [],
+                    team: [],
+                    jobs: []
+                };
+            }
 
             users.push(newUser);
             localStorage.setItem('users', JSON.stringify(users));

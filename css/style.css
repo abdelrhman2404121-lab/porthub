@@ -1039,3 +1039,91 @@ img {
     border-radius: var(--radius-md);
     text-align: center;
 }
+
+/* Company Timeline Styles */
+.timeline-container {
+    position: relative;
+    padding-left: 20px;
+}
+
+.timeline-item {
+    position: relative;
+    transition: var(--transition);
+}
+
+.timeline-item:hover {
+    transform: translateX(5px);
+}
+
+.timeline-item:hover > div:nth-child(2) {
+    box-shadow: 0 0 15px rgba(59,130,246,0.5);
+    background-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+.timeline-item:hover > div:nth-child(3) {
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-color);
+}
+
+/* --- UI Innovations --- */
+
+/* Animated Gradient Background */
+.bg-animated-gradient {
+    background: linear-gradient(-45deg, var(--primary-color), var(--secondary-color), var(--accent-color), #2563eb);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
+    color: white;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Glassmorphism Panel */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+[data-theme="dark"] .glass-panel {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* 3D Card Hover Effect */
+.card-3d {
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+    transform-style: preserve-3d;
+}
+
+.card-3d:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.375rem;
+}
+.badge-company {
+    background-color: var(--accent-color);
+    color: white;
+}
+.badge-user {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+

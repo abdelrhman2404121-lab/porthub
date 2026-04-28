@@ -28,6 +28,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Role-based Nav adjustments
+    if (currentUser.role === 'company') {
+        document.getElementById('nav-company-details').style.display = 'block';
+        document.getElementById('nav-company-team').style.display = 'block';
+        document.getElementById('nav-projects-skills').textContent = 'Products & Services';
+        document.getElementById('cv-upload-title').textContent = 'Upload Company Brochure / Pitch Deck';
+        document.querySelector('#cv-drop-area .upload-text').innerHTML = 'Drag & drop your Brochure/Deck here or <span class="upload-link">click to browse</span>';
+    }
+
     // Populate Account Form
     document.getElementById('set-name').value = currentUser.name || '';
     document.getElementById('set-title').value = currentUser.title || '';
@@ -198,6 +207,183 @@ document.addEventListener('DOMContentLoaded', () => {
             showNotification('Project removed.', 'success');
         }
     };
+
+    // --- COMPANY SPECIFIC SECTIONS ---
+    if (currentUser.role === 'company') {
+        // Render Branches
+        function renderBranches() {
+            const container = document.getElementById('set-branches-list');
+            if (currentUser.branches && currentUser.branches.length > 0) {
+                container.innerHTML = currentUser.branches.map(b => `
+                    <div class="p-3 mb-2 flex justify-between items-center" style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        <div>
+                            <h4 class="m-0">${b.name}</h4>
+                            <p class="text-sm text-secondary m-0"><i class="fas fa-map-marker-alt"></i> ${b.location} | <i class="fas fa-envelope"></i> ${b.contact}</p>
+                        </div>
+                        <button class="btn btn-outline text-danger" style="padding: 4px 8px; border-color: var(--danger);" onclick="window.removeBranch(${b.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="text-sm text-secondary">No branches added yet.</p>';
+            }
+        }
+        renderBranches();
+
+        document.getElementById('form-add-branch').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('set-branch-name').value.trim();
+            const loc = document.getElementById('set-branch-loc').value.trim();
+            const contact = document.getElementById('set-branch-contact').value.trim();
+            if (name && loc) {
+                if (!currentUser.branches) currentUser.branches = [];
+                currentUser.branches.push({ id: Date.now(), name, location: loc, contact });
+                saveUser();
+                renderBranches();
+                document.getElementById('form-add-branch').reset();
+                showNotification('Branch added successfully!');
+            }
+        });
+
+        window.removeBranch = (id) => {
+            currentUser.branches = currentUser.branches.filter(b => b.id !== id);
+            saveUser();
+            renderBranches();
+            showNotification('Branch removed.');
+        };
+
+        // Render Timeline
+        function renderTimeline() {
+            const container = document.getElementById('set-timeline-list');
+            if (currentUser.timeline && currentUser.timeline.length > 0) {
+                // sort by date descending
+                const sorted = [...currentUser.timeline].sort((a, b) => new Date(b.date) - new Date(a.date));
+                container.innerHTML = sorted.map(t => `
+                    <div class="p-3 mb-2 flex justify-between items-start" style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        <div class="flex gap-3 items-start">
+                            <div style="background: rgba(59,130,246,0.1); color: var(--primary-color); padding: 10px; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="${t.icon || 'fas fa-star'}"></i>
+                            </div>
+                            <div>
+                                <span class="text-sm text-primary font-bold">${t.date}</span>
+                                <h4 class="m-0 mt-1">${t.title}</h4>
+                                <p class="text-sm text-secondary m-0 mt-1">${t.desc}</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline text-danger" style="padding: 4px 8px; border-color: var(--danger);" onclick="window.removeTimeline(${t.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="text-sm text-secondary">No timeline events added yet.</p>';
+            }
+        }
+        renderTimeline();
+
+        document.getElementById('form-add-timeline').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const date = document.getElementById('set-tl-date').value;
+            const title = document.getElementById('set-tl-title').value.trim();
+            const desc = document.getElementById('set-tl-desc').value.trim();
+            const icon = document.getElementById('set-tl-icon').value.trim() || 'fas fa-star';
+            if (date && title && desc) {
+                if (!currentUser.timeline) currentUser.timeline = [];
+                currentUser.timeline.push({ id: Date.now(), date, title, desc, icon });
+                saveUser();
+                renderTimeline();
+                document.getElementById('form-add-timeline').reset();
+                showNotification('Event added to timeline!');
+            }
+        });
+
+        window.removeTimeline = (id) => {
+            currentUser.timeline = currentUser.timeline.filter(t => t.id !== id);
+            saveUser();
+            renderTimeline();
+            showNotification('Timeline event removed.');
+        };
+
+        // Render Team
+        function renderTeam() {
+            const container = document.getElementById('set-team-list');
+            if (currentUser.team && currentUser.team.length > 0) {
+                container.innerHTML = currentUser.team.map(t => `
+                    <div class="p-3 flex items-center gap-3 relative" style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        <img src="${t.avatar || 'https://i.pravatar.cc/150?img=1'}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                        <div>
+                            <h4 class="m-0">${t.name}</h4>
+                            <p class="text-sm text-secondary m-0">${t.role}</p>
+                        </div>
+                        <button class="btn btn-outline text-danger" style="padding: 2px 6px; position: absolute; top: 10px; right: 10px; border: none;" onclick="window.removeTeam(${t.id})"><i class="fas fa-times"></i></button>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="text-sm text-secondary col-span-2">No team members added.</p>';
+            }
+        }
+        renderTeam();
+
+        document.getElementById('form-add-team').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('set-team-name').value.trim();
+            const role = document.getElementById('set-team-role').value.trim();
+            const avatar = document.getElementById('set-team-avatar').value.trim();
+            if (name && role) {
+                if (!currentUser.team) currentUser.team = [];
+                currentUser.team.push({ id: Date.now(), name, role, avatar });
+                saveUser();
+                renderTeam();
+                document.getElementById('form-add-team').reset();
+                showNotification('Team member added!');
+            }
+        });
+
+        window.removeTeam = (id) => {
+            currentUser.team = currentUser.team.filter(t => t.id !== id);
+            saveUser();
+            renderTeam();
+            showNotification('Team member removed.');
+        };
+
+        // Render Jobs
+        function renderJobs() {
+            const container = document.getElementById('set-jobs-list');
+            if (currentUser.jobs && currentUser.jobs.length > 0) {
+                container.innerHTML = currentUser.jobs.map(j => `
+                    <div class="p-3 mb-2 flex justify-between items-center" style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        <div>
+                            <h4 class="m-0">${j.title}</h4>
+                            <p class="text-sm text-secondary m-0"><i class="fas fa-briefcase"></i> ${j.location} | <a href="${j.link}" target="_blank">Apply</a></p>
+                        </div>
+                        <button class="btn btn-outline text-danger" style="padding: 4px 8px; border-color: var(--danger);" onclick="window.removeJob(${j.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="text-sm text-secondary">No job openings posted.</p>';
+            }
+        }
+        renderJobs();
+
+        document.getElementById('form-add-job').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = document.getElementById('set-job-title').value.trim();
+            const location = document.getElementById('set-job-loc').value.trim();
+            const link = document.getElementById('set-job-link').value.trim();
+            if (title && location && link) {
+                if (!currentUser.jobs) currentUser.jobs = [];
+                currentUser.jobs.push({ id: Date.now(), title, location, link });
+                saveUser();
+                renderJobs();
+                document.getElementById('form-add-job').reset();
+                showNotification('Job posted!');
+            }
+        });
+
+        window.removeJob = (id) => {
+            currentUser.jobs = currentUser.jobs.filter(j => j.id !== id);
+            saveUser();
+            renderJobs();
+            showNotification('Job removed.');
+        };
+    }
 
     function saveUser() {
         if (userIndex !== -1) {

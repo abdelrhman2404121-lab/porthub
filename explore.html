@@ -62,13 +62,18 @@
 
             <div class="page-content animate-fade-in">
                 <div class="flex justify-between items-center mb-4">
-                    <h2>Explore Professionals</h2>
+                    <h2>Explore Network</h2>
                     <div class="flex gap-2">
+                        <select id="type-filter" class="form-control" style="width: auto;">
+                            <option value="all">All Types</option>
+                            <option value="individual">Individuals</option>
+                            <option value="company">Companies</option>
+                        </select>
                         <select id="sort-filter" class="form-control" style="width: auto;">
                             <option value="newest">Newest</option>
                             <option value="rating">Top Rated</option>
                         </select>
-                        <input type="text" id="page-search" class="form-control" placeholder="Filter by name or skill..." style="width: 250px;">
+                        <input type="text" id="page-search" class="form-control" placeholder="Search by name, role, or company..." style="width: 250px;">
                     </div>
                 </div>
 

@@ -37,9 +37,16 @@
                     <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
                     <h2>Dashboard</h2>
                 </div>
-                <div class="nav-right">
-                    <button class="theme-toggle" id="theme-toggle"><i class="fas fa-moon" id="theme-icon"></i></button>
-                    <div class="user-menu-section" id="user-menu-section">
+                    <div class="nav-right" style="display: flex; align-items: center; gap: 15px;">
+                        <button class="theme-toggle" id="theme-toggle"><i class="fas fa-moon" id="theme-icon"></i></button>
+                        
+                        <!-- Notifications -->
+                        <div style="position: relative; cursor: pointer;" id="nav-notifications-btn">
+                            <i class="fas fa-bell text-secondary" style="font-size: 1.2rem;"></i>
+                            <span id="nav-notif-badge" style="position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 10px; height: 10px; display: none;"></span>
+                        </div>
+
+                        <div class="user-menu-section" id="user-menu-section">
                         <div class="user-menu" id="user-menu">
                             <span id="user-greeting">Hi, User</span>
                             <img src="https://i.pravatar.cc/150?img=3" alt="Avatar" class="user-avatar" id="nav-avatar">
@@ -69,7 +76,7 @@
                             <h4 class="mb-2">Stats</h4>
                             <div class="flex justify-between mb-2">
                                 <span class="text-secondary">Profile Views</span>
-                                <strong>124</strong>
+                                <strong id="dash-views-count" style="cursor: pointer; color: var(--primary-color); text-decoration: underline;">0</strong>
                             </div>
                             <div class="flex justify-between mb-2">
                                 <span class="text-secondary">Rating</span>
@@ -83,6 +90,15 @@
                     </div>
                     
                     <div class="col-span-2" style="grid-column: span 2;">
+                        <div class="card mb-4" id="dash-requests-card" style="display: none;">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3>Team Requests</h3>
+                            </div>
+                            <div id="dash-requests" class="flex flex-col gap-3">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
                         <div class="card mb-4">
                             <div class="flex justify-between items-center mb-4">
                                 <h3>Recent Notifications</h3>
@@ -118,6 +134,17 @@
             </footer>
         </main>
     </div>
+
+    <!-- Viewers Modal -->
+    <div id="viewers-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="card bg-animated-gradient" style="width: 100%; max-width: 400px; padding: 20px; border-radius: var(--radius-lg); position: relative;">
+            <button id="close-viewers-modal" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem;"><i class="fas fa-times"></i></button>
+            <h3 style="color: white; margin-bottom: 15px;">Recent Viewers</h3>
+            <div id="modal-viewers-list" class="flex flex-col gap-3" style="max-height: 300px; overflow-y: auto; padding-right: 10px;">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
   
 <div id="ph-chatbot-widget">
     <button id="ph-chat-toggle" type="button" title="AI Career Advisor">💬</button>
@@ -134,7 +161,8 @@
     </div>
 </div>
 
-
+    <script src="js/main.js"></script>
+    <script src="js/dashboard.js"></script>
     <script src="js/chatbot.js"></script>
 </body>
 </html>
