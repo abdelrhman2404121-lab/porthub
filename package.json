@@ -5,7 +5,11 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "kill": "npx kill-port 5000",
+    "fresh": "npx kill-port 5000 && nodemon app.js",
+    "setup": "node -e \"const fs=require('fs');if(!fs.existsSync('.env')){fs.copyFileSync('.env.example','.env');console.log('✅ .env created! Open it and fill in your MONGO_URI.');}else{console.log('✅ .env already exists.');}\"",
+    "postinstall": "npm run setup"
   },
   "keywords": [
     "portfolio",
