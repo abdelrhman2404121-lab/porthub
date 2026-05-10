@@ -45,6 +45,155 @@ document.addEventListener('DOMContentLoaded', async () => {
     setEl('set-bio')   && (setEl('set-bio').value    = currentUser.bio    || '');
     setEl('set-avatar')&& (setEl('set-avatar').value = currentUser.profileImage || '');
 
+    // Avatar Preview
+    if (currentUser.profileImage && document.getElementById('avatar-preview')) {
+        const preview = document.getElementById('avatar-preview');
+        const icon    = document.getElementById('avatar-icon');
+        preview.src   = currentUser.profileImage;
+        preview.style.display = 'block';
+        if (icon) icon.style.display = 'none';
+    }
+
+    // Avatar Upload Logic
+    const avatarDropArea = document.getElementById('avatar-drop-area');
+    const avatarFileInput = document.getElementById('avatar-file-input');
+    const avatarError = document.getElementById('avatar-error');
+
+    if (avatarDropArea && avatarFileInput) {
+        avatarDropArea.addEventListener('click', () => avatarFileInput.click());
+        
+        avatarDropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            avatarDropArea.style.borderColor = 'var(--primary-color)';
+        });
+
+        avatarDropArea.addEventListener('dragleave', () => {
+            avatarDropArea.style.borderColor = 'var(--border-color)';
+        });
+
+        avatarDropArea.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            avatarDropArea.style.borderColor = 'var(--border-color)';
+            if (e.dataTransfer.files.length) {
+                await uploadAvatar(e.dataTransfer.files[0]);
+            }
+        });
+
+        avatarFileInput.addEventListener('change', async (e) => {
+            if (e.target.files.length) {
+                await uploadAvatar(e.target.files[0]);
+            }
+        });
+    }
+
+    async function uploadAvatar(file) {
+        if (!file.type.startsWith('image/')) {
+            if (avatarError) { avatarError.textContent = 'Please upload an image file.'; avatarError.style.display = 'block'; }
+            return;
+        }
+        if (avatarError) avatarError.style.display = 'none';
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${getToken()}` },
+                body: formData
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'Upload failed');
+            
+            // Set URL
+            const url = data.url;
+            setEl('set-avatar').value = url;
+            
+            // Show preview
+            const preview = document.getElementById('avatar-preview');
+            const icon    = document.getElementById('avatar-icon');
+            if (preview) { preview.src = url; preview.style.display = 'block'; }
+            if (icon) icon.style.display = 'none';
+            
+            showNotification('Image uploaded successfully! Click Save Changes to apply.');
+        } catch (err) {
+            if (avatarError) { avatarError.textContent = err.message; avatarError.style.display = 'block'; }
+        }
+    }
+
+    // CV Upload Logic
+    let currentCvUrl = currentUser.cvUrl || '';
+    const cvDropArea = document.getElementById('cv-drop-area');
+    const cvFileInput = document.getElementById('cv-file-input');
+    const cvError = document.getElementById('cv-error');
+    const cvFileInfo = document.getElementById('cv-file-info');
+    const cvFileName = document.getElementById('cv-file-name');
+
+    if (cvDropArea && cvFileInput) {
+        cvDropArea.addEventListener('click', () => cvFileInput.click());
+        
+        cvDropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            cvDropArea.style.borderColor = 'var(--primary-color)';
+        });
+
+        cvDropArea.addEventListener('dragleave', () => {
+            cvDropArea.style.borderColor = 'var(--border-color)';
+        });
+
+        cvDropArea.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            cvDropArea.style.borderColor = 'var(--border-color)';
+            if (e.dataTransfer.files.length) {
+                await uploadCV(e.dataTransfer.files[0]);
+            }
+        });
+
+        cvFileInput.addEventListener('change', async (e) => {
+            if (e.target.files.length) {
+                await uploadCV(e.target.files[0]);
+            }
+        });
+        
+        if (currentCvUrl && cvFileInfo && cvFileName) {
+            cvFileName.textContent = currentCvUrl.split('/').pop() || 'Current CV.pdf';
+            cvFileInfo.style.display = 'block';
+        }
+    }
+
+    async function uploadCV(file) {
+        if (file.type !== 'application/pdf') {
+            if (cvError) { cvError.textContent = 'Please upload a PDF file.'; cvError.style.display = 'block'; }
+            return;
+        }
+        if (cvError) cvError.style.display = 'none';
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${getToken()}` },
+                body: formData
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'Upload failed');
+            
+            // Set URL
+            currentCvUrl = data.url;
+            
+            // Show file info
+            if (cvFileInfo && cvFileName) {
+                cvFileName.textContent = file.name;
+                cvFileInfo.style.display = 'block';
+            }
+            showNotification('CV uploaded successfully! Click Save Changes to apply.');
+        } catch (err) {
+            if (cvError) { cvError.textContent = err.message; cvError.style.display = 'block'; }
+        }
+    }
+
     const accountForm = document.getElementById('form-account');
     if (accountForm) {
         accountForm.addEventListener('submit', async e => {
@@ -60,7 +209,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         email:        setEl('set-email').value.trim(),
                         phone:        setEl('set-phone').value.trim(),
                         bio:          setEl('set-bio').value.trim(),
-                        profileImage: setEl('set-avatar').value.trim() || `https://i.pravatar.cc/150?u=${currentUser.email}`
+                        profileImage: setEl('set-avatar').value.trim() || `https://i.pravatar.cc/150?u=${currentUser.email}`,
+                        cvUrl:        currentCvUrl
                     })
                 });
                 currentUser = res.user;
@@ -195,6 +345,72 @@ document.addEventListener('DOMContentLoaded', async () => {
             : '<p class="text-sm text-secondary">No projects added yet.</p>';
     }
 
+    // Projects Upload Logic
+    let currentProjectImage = '';
+    const projDropArea = document.getElementById('projects-drop-area');
+    const projFileInput = document.getElementById('projects-file-input');
+    const projError = document.getElementById('projects-error');
+    const projFilesInfo = document.getElementById('projects-files-info');
+
+    if (projDropArea && projFileInput) {
+        projDropArea.addEventListener('click', () => projFileInput.click());
+        
+        projDropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            projDropArea.style.borderColor = 'var(--primary-color)';
+        });
+
+        projDropArea.addEventListener('dragleave', () => {
+            projDropArea.style.borderColor = 'var(--border-color)';
+        });
+
+        projDropArea.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            projDropArea.style.borderColor = 'var(--border-color)';
+            if (e.dataTransfer.files.length) {
+                await uploadProjectImage(e.dataTransfer.files[0]);
+            }
+        });
+
+        projFileInput.addEventListener('change', async (e) => {
+            if (e.target.files.length) {
+                await uploadProjectImage(e.target.files[0]);
+            }
+        });
+    }
+
+    async function uploadProjectImage(file) {
+        // Removed the image/ check to allow generic files as requested
+        if (projError) projError.style.display = 'none';
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${getToken()}` },
+                body: formData
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'Upload failed');
+            
+            // Set URL
+            currentProjectImage = data.url;
+            
+            // Show file info
+            if (projFilesInfo) {
+                const isImage = file.type.startsWith('image/');
+                const icon = isImage ? 'fa-image' : 'fa-file-alt';
+                projFilesInfo.innerHTML = `<p><i class="fas ${icon}"></i> ${file.name} (Uploaded)</p>`;
+                projFilesInfo.style.display = 'block';
+            }
+            showNotification('Project file uploaded! Now fill in the details and Add Project.');
+        } catch (err) {
+            if (projError) { projError.textContent = err.message; projError.style.display = 'block'; }
+        }
+    }
+
     const projForm = document.getElementById('form-add-project');
     if (projForm) {
         projForm.addEventListener('submit', async e => {
@@ -204,9 +420,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             const link  = document.getElementById('set-proj-link').value.trim();
             if (!title || !desc) return;
             try {
-                await apiFetch('/projects', { method:'POST', body: JSON.stringify({ title, description: desc, desc, link, liveDemo: link }) });
+                await apiFetch('/projects', { method:'POST', body: JSON.stringify({ 
+                    title, description: desc, desc, link, liveDemo: link, image: currentProjectImage 
+                }) });
                 showNotification('Project added!');
                 projForm.reset();
+                currentProjectImage = '';
+                if (projFilesInfo) projFilesInfo.style.display = 'none';
                 loadProjects();
             } catch (err) { showNotification(err.message, 'error'); }
         });
@@ -231,7 +451,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const el = document.getElementById('set-branches-list');
             if (!el) return;
             el.innerHTML = (currentUser.branches||[]).length
-                ? currentUser.branches.map(b=>`<div class="p-3 mb-2 flex justify-between items-center" style="background:var(--bg-color);border:1px solid var(--border-color);border-radius:var(--radius-md);"><div><h4 class="m-0">${b.name}</h4><p class="text-sm text-secondary m-0"><i class="fas fa-map-marker-alt"></i> ${b.location} | <i class="fas fa-envelope"></i> ${b.contact}</p></div><button class="btn btn-outline text-danger" style="padding:4px 8px;border-color:var(--danger);" onclick="window.removeBranch('${b._id}')"><i class="fas fa-trash"></i></button></div>`).join('')
+                ? currentUser.branches.map(b=>`<div class="p-4 mb-3 flex justify-between items-center glass-panel hover-lift animate-fade-in" style="border-radius:var(--radius-lg);"><div><h4 class="m-0" style="color:var(--primary-color);">${b.name}</h4><p class="text-sm text-secondary m-0 mt-1"><i class="fas fa-map-marker-alt"></i> ${b.location} | <i class="fas fa-envelope"></i> ${b.contact}</p></div><button class="btn btn-outline text-danger" style="padding:6px 12px;border-color:var(--danger);" onclick="window.removeBranch('${b._id}')"><i class="fas fa-trash"></i></button></div>`).join('')
                 : '<p class="text-sm text-secondary">No branches yet.</p>';
         }
         renderBranches();
@@ -259,12 +479,46 @@ document.addEventListener('DOMContentLoaded', async () => {
             } catch (err) { showNotification(err.message,'error'); }
         };
 
+        // Team Members
+        function renderTeam() {
+            const el = document.getElementById('set-team-list');
+            if (!el) return;
+            el.innerHTML = (currentUser.team||[]).length
+                ? currentUser.team.map(t=>`<div class="p-4 mb-3 flex justify-between items-center glass-panel hover-lift animate-fade-in" style="border-radius:var(--radius-lg);"><div class="flex items-center gap-3"><div class="avatar-ring"><img src="${t.avatar || 'https://i.pravatar.cc/150'}" style="width:40px;height:40px;object-fit:cover;"></div><div><h4 class="m-0" style="color:var(--primary-color);">${t.name}</h4><p class="text-sm text-secondary m-0">${t.role}</p></div></div><button class="btn btn-outline text-danger" style="padding:6px 12px;border-color:var(--danger);" onclick="window.removeTeam('${t._id}')"><i class="fas fa-trash"></i></button></div>`).join('')
+                : '<p class="text-sm text-secondary">No team members yet.</p>';
+        }
+        renderTeam();
+
+        const teamForm = document.getElementById('form-add-team');
+        if (teamForm) {
+            teamForm.addEventListener('submit', async e => {
+                e.preventDefault();
+                const name   = document.getElementById('set-team-name').value.trim();
+                const role   = document.getElementById('set-team-role').value.trim();
+                const avatar = document.getElementById('set-team-avatar').value.trim();
+                if (!name || !role) return;
+                try {
+                    const res = await apiFetch('/users/profile', { method:'PUT', body: JSON.stringify({ team: [...(currentUser.team||[]), { name, role, avatar }] }) });
+                    currentUser = res.user; setSession(getToken(), currentUser);
+                    renderTeam(); teamForm.reset(); showNotification('Team member added!');
+                } catch (err) { showNotification(err.message,'error'); }
+            });
+        }
+
+        window.removeTeam = async id => {
+            if (!confirm('Remove this team member?')) return;
+            try {
+                const res = await apiFetch('/users/profile', { method:'PUT', body: JSON.stringify({ team: (currentUser.team||[]).filter(t=>String(t._id)!==id) }) });
+                currentUser = res.user; setSession(getToken(), currentUser); renderTeam(); showNotification('Team member removed.');
+            } catch (err) { showNotification(err.message,'error'); }
+        };
+
         // Jobs
         function renderJobs() {
             const el = document.getElementById('set-jobs-list');
             if (!el) return;
             el.innerHTML = (currentUser.jobs||[]).length
-                ? currentUser.jobs.map(j=>`<div class="p-3 mb-2 flex justify-between items-center" style="background:var(--bg-color);border:1px solid var(--border-color);border-radius:var(--radius-md);"><div><h4 class="m-0">${j.title}</h4><p class="text-sm text-secondary m-0"><i class="fas fa-briefcase"></i> ${j.location} | <a href="${j.link}" target="_blank">Apply</a></p></div><button class="btn btn-outline text-danger" style="padding:4px 8px;border-color:var(--danger);" onclick="window.removeJob('${j._id}')"><i class="fas fa-trash"></i></button></div>`).join('')
+                ? currentUser.jobs.map(j=>`<div class="p-4 mb-3 flex justify-between items-center glass-panel hover-lift animate-fade-in" style="border-radius:var(--radius-lg);"><div><h4 class="m-0" style="color:var(--primary-color);">${j.title}</h4><p class="text-sm text-secondary m-0 mt-1"><i class="fas fa-briefcase"></i> ${j.location} | <a href="${j.link}" target="_blank" style="font-weight:600;">Apply</a></p></div><button class="btn btn-outline text-danger" style="padding:6px 12px;border-color:var(--danger);" onclick="window.removeJob('${j._id}')"><i class="fas fa-trash"></i></button></div>`).join('')
                 : '<p class="text-sm text-secondary">No job openings posted.</p>';
         }
         renderJobs();
@@ -299,7 +553,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const el = document.getElementById('set-exp-list');
             if (!el) return;
             el.innerHTML = (currentUser.experience||[]).length
-                ? currentUser.experience.map(e=>`<div class="mb-3 p-3" style="background:var(--bg-color);border-radius:var(--radius-md);display:flex;justify-content:space-between;align-items:center;"><div><h4 class="m-0">${e.role}</h4><p class="text-sm text-secondary m-0">${e.company} | ${e.years||''}</p></div><button class="btn btn-outline" style="color:var(--danger);border-color:var(--danger);padding:4px 8px;" onclick="window.removeExp('${e._id}')"><i class="fas fa-trash"></i></button></div>`).join('')
+                ? currentUser.experience.map(e=>`<div class="mb-3 p-4 glass-panel hover-lift animate-fade-in" style="border-radius:var(--radius-lg);display:flex;justify-content:space-between;align-items:center;"><div><h4 class="m-0" style="color:var(--primary-color);">${e.role}</h4><p class="text-sm text-secondary m-0 mt-1">${e.company} | ${e.years||''}</p></div><button class="btn btn-outline" style="color:var(--danger);border-color:var(--danger);padding:6px 12px;" onclick="window.removeExp('${e._id}')"><i class="fas fa-trash"></i></button></div>`).join('')
                 : '<p class="text-sm text-secondary">No experience added yet.</p>';
         }
         renderExp();
@@ -332,7 +586,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const el = document.getElementById('set-edu-list');
             if (!el) return;
             el.innerHTML = (currentUser.education||[]).length
-                ? currentUser.education.map(e=>`<div class="mb-3 p-3" style="background:var(--bg-color);border-radius:var(--radius-md);display:flex;justify-content:space-between;align-items:center;"><div><h4 class="m-0">${e.degree}</h4><p class="text-sm text-secondary m-0">${e.school} | ${e.year||''}</p></div><button class="btn btn-outline" style="color:var(--danger);border-color:var(--danger);padding:4px 8px;" onclick="window.removeEdu('${e._id}')"><i class="fas fa-trash"></i></button></div>`).join('')
+                ? currentUser.education.map(e=>`<div class="mb-3 p-4 glass-panel hover-lift animate-fade-in" style="border-radius:var(--radius-lg);display:flex;justify-content:space-between;align-items:center;"><div><h4 class="m-0" style="color:var(--primary-color);">${e.degree}</h4><p class="text-sm text-secondary m-0 mt-1">${e.school} | ${e.year||''}</p></div><button class="btn btn-outline" style="color:var(--danger);border-color:var(--danger);padding:6px 12px;" onclick="window.removeEdu('${e._id}')"><i class="fas fa-trash"></i></button></div>`).join('')
                 : '<p class="text-sm text-secondary">No education added yet.</p>';
         }
         renderEdu();

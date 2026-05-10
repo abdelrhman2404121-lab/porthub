@@ -27,6 +27,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const data = await apiFetch('/messages/conversations');
             conversations = data.conversations || [];
+            
+            const q = urlParams.get('q');
+            if (q) {
+                const searchForm = document.getElementById('global-search-form');
+                if (searchForm) {
+                    const input = searchForm.querySelector('input');
+                    if (input) input.value = q;
+                }
+                const lowerQ = q.toLowerCase();
+                conversations = conversations.filter(c => {
+                    const other = c.participants.find(p => (p._id || p) !== currentUser._id);
+                    return other && other.name && other.name.toLowerCase().includes(lowerQ);
+                });
+            }
+
             renderRequests();
             renderChatList();
 
@@ -40,6 +55,81 @@ document.addEventListener('DOMContentLoaded', async () => {
                 else openNewChat(initialUserId);
             }
         } catch (err) { console.error('loadConversations:', err); }
+    }
+
+    const createGroupBtn = document.getElementById('create-group-btn');
+    const groupModal = document.getElementById('group-chat-modal');
+    const closeGroupModal = document.getElementById('close-group-modal');
+    const cancelGroupBtn = document.getElementById('cancel-group-btn');
+    const confirmGroupBtn = document.getElementById('confirm-group-btn');
+    const groupMembersList = document.getElementById('group-members-list');
+    const groupChatName = document.getElementById('group-chat-name');
+
+    if (createGroupBtn && currentUser.role === 'company') {
+        createGroupBtn.style.display = 'block';
+
+        const hideGroupModal = () => {
+            if (groupModal) groupModal.style.display = 'none';
+            if (groupChatName) groupChatName.value = '';
+        };
+
+        if (closeGroupModal) closeGroupModal.addEventListener('click', hideGroupModal);
+        if (cancelGroupBtn) cancelGroupBtn.addEventListener('click', hideGroupModal);
+
+        createGroupBtn.addEventListener('click', () => {
+            if (!groupModal) return;
+            groupModal.style.display = 'flex';
+            
+            // Render accepted team members
+            if (currentUser.team && currentUser.team.length > 0) {
+                const accepted = currentUser.team; // all users in the team array are accepted
+                if (accepted.length === 0) {
+                    groupMembersList.innerHTML = '<p class="text-secondary text-sm">No active team members.</p>';
+                } else {
+                    groupMembersList.innerHTML = accepted.map(t => `
+                        <label class="flex items-center gap-3 p-2" style="background:var(--bg-color); border-radius:var(--radius-sm); cursor:pointer;">
+                            <input type="checkbox" class="group-member-checkbox" value="${t.userId}" checked>
+                            <img src="${t.avatar || `https://i.pravatar.cc/40?u=${t.userId}`}" style="width:30px;height:30px;border-radius:50%;">
+                            <span>${t.name || 'Team Member'}</span>
+                        </label>
+                    `).join('');
+                }
+            } else {
+                groupMembersList.innerHTML = '<p class="text-secondary text-sm">No team members available.</p>';
+            }
+        });
+
+        if (confirmGroupBtn) {
+            confirmGroupBtn.addEventListener('click', async () => {
+                const name = groupChatName ? groupChatName.value.trim() : '';
+                if (!name) {
+                    showNotification('Please enter a group name', 'error');
+                    return;
+                }
+
+                // Get selected members
+                const checkboxes = document.querySelectorAll('.group-member-checkbox:checked');
+                const memberIds = Array.from(checkboxes).map(cb => cb.value);
+
+                if (memberIds.length === 0) {
+                    showNotification('Please select at least one team member', 'error');
+                    return;
+                }
+
+                try {
+                    const res = await apiFetch('/messages/group', {
+                        method: 'POST',
+                        body: JSON.stringify({ groupName: name, memberIds })
+                    });
+                    showNotification('Group chat created successfully!');
+                    hideGroupModal();
+                    loadConversations();
+                    openChat(res.conversation._id);
+                } catch (err) {
+                    showNotification(err.message, 'error');
+                }
+            });
+        }
     }
 
     // ── Render pending requests (received) ────────────────────────────────────
@@ -59,15 +149,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             const name  = other?.name || 'Unknown';
             const img   = other?.profileImage || `https://i.pravatar.cc/40?u=${other?._id}`;
             return `
-                <div class="request-item" data-id="${c._id}">
-                    <img src="${img}" alt="${name}">
-                    <div class="request-info">
-                        <div class="request-name">${name}</div>
-                        <div class="request-preview">${c.requestMessage || ''}</div>
+                <div class="request-item glass-panel hover-lift animate-fade-in" data-id="${c._id}" style="border-radius:var(--radius-lg); margin-bottom: 12px; padding: 15px;">
+                    <div class="avatar-ring"><img src="${img}" alt="${name}" style="width:40px;height:40px;object-fit:cover;"></div>
+                    <div class="request-info" style="margin-left:12px;">
+                        <div class="request-name" style="color:var(--primary-color);font-weight:600;">${name}</div>
+                        <div class="request-preview" style="color:var(--text-secondary);">${c.requestMessage || ''}</div>
                     </div>
                     <div class="request-actions">
-                        <button class="btn btn-primary accept-btn" data-id="${c._id}">Accept</button>
-                        <button class="btn btn-outline decline-btn" data-id="${c._id}">Decline</button>
+                        <button class="btn btn-primary accept-btn" data-id="${c._id}" style="padding:4px 12px;font-size:0.8rem;">Accept</button>
+                        <button class="btn btn-outline decline-btn" data-id="${c._id}" style="padding:4px 12px;font-size:0.8rem;">Decline</button>
                     </div>
                 </div>`;
         }).join('');
@@ -86,23 +176,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         const accepted = conversations.filter(c => c.status === 'accepted');
 
         chatList.innerHTML = accepted.length ? accepted.map(c => {
-            const other    = c.participants.find(p => (p._id || p) !== currentUser._id);
-            const name     = other?.name || 'Unknown';
-            const img      = other?.profileImage || `https://i.pravatar.cc/40?u=${other?._id}`;
+            let name, img, online, lastSeen;
+            if (c.isGroup) {
+                name = c.groupName || 'Team Group Chat';
+                img  = 'https://ui-avatars.com/api/?name=Team&background=random';
+                online = false;
+                lastSeen = '';
+            } else {
+                const other = c.participants.find(p => (p._id || p) !== currentUser._id);
+                name     = other?.name || 'Unknown';
+                img      = other?.profileImage || `https://i.pravatar.cc/40?u=${other?._id}`;
+                online   = other?.isOnline;
+                lastSeen = !online && other?.lastSeen ? formatLastSeen(other.lastSeen) : '';
+            }
+
             const lastMsg  = c.lastMessageText || 'No messages yet';
             const isActive = c._id === activeConvoId;
-            const online   = other?.isOnline;
-            const lastSeen = !online && other?.lastSeen ? formatLastSeen(other.lastSeen) : '';
 
             return `
-                <div class="chat-item ${isActive?'active':''}" data-id="${c._id}">
+                <div class="chat-item ${isActive?'active':''} hover-lift animate-fade-in" data-id="${c._id}" style="padding:12px;border-radius:var(--radius-md);margin-bottom:8px;${isActive ? 'background:linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color:white;' : ''}">
                     <div style="position:relative;">
-                        <img src="${img}" alt="${name}">
-                        ${online ? '<span style="position:absolute;bottom:0;right:0;width:10px;height:10px;background:#22c55e;border-radius:50%;border:2px solid var(--card-bg);"></span>' : ''}
+                        <div class="avatar-ring" style="padding:2px;"><img src="${img}" alt="${name}" style="width:40px;height:40px;object-fit:cover;"></div>
+                        ${online ? '<span style="position:absolute;bottom:0;right:0;width:12px;height:12px;background:#10b981;border-radius:50%;border:2px solid var(--surface-color);"></span>' : ''}
                     </div>
-                    <div class="chat-info">
-                        <div class="chat-name">${name}</div>
-                        <div class="chat-last-msg">${online ? '<span style="color:#22c55e;font-size:0.75rem;">Online</span>' : (lastSeen ? `<span style="font-size:0.75rem;color:var(--text-secondary);">Last seen ${lastSeen}</span>` : lastMsg)}</div>
+                    <div class="chat-info" style="margin-left:12px;">
+                        <div class="chat-name" style="font-weight:600;${isActive ? 'color:white;' : 'color:var(--text-primary);'}">${name}</div>
+                        <div class="chat-last-msg">${online ? '<span style="color:#10b981;font-size:0.75rem;font-weight:600;">Online</span>' : (lastSeen ? `<span style="font-size:0.75rem;${isActive ? 'color:rgba(255,255,255,0.8);' : 'color:var(--text-secondary);'}">Last seen ${lastSeen}</span>` : `<span style="${isActive ? 'color:rgba(255,255,255,0.8);' : 'color:var(--text-secondary);'}">${lastMsg}</span>`)}</div>
                     </div>
                 </div>`;
         }).join('') : '<p class="text-sm text-secondary p-3">No conversations yet.</p>';
@@ -120,12 +219,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const data  = await apiFetch(`/messages/${convoId}`);
             const convo = data.conversation;
-            const other = convo.participants.find(p => p._id !== currentUser._id);
+            
+            if (convo.isGroup) {
+                if (chatAvatar) chatAvatar.src = 'https://ui-avatars.com/api/?name=Team&background=random';
+                if (chatName)   chatName.textContent = convo.groupName || 'Team Group Chat';
+            } else {
+                const other = convo.participants.find(p => p._id !== currentUser._id);
+                if (chatAvatar) chatAvatar.src       = other?.profileImage || `https://i.pravatar.cc/40?u=${other?._id}`;
+                if (chatName)   chatName.textContent = other?.name || 'Unknown';
+            }
 
-            if (chatAvatar) chatAvatar.src       = other?.profileImage || `https://i.pravatar.cc/40?u=${other?._id}`;
-            if (chatName)   chatName.textContent = other?.name || 'Unknown';
-
-            renderMessages(convo.messages);
+            renderMessages(convo.messages, convo.isGroup, convo.participants);
             if (messageInput) messageInput.focus();
 
             // Poll for new messages every 5s
@@ -148,13 +252,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // ── Render messages ───────────────────────────────────────────────────────
-    function renderMessages(messages) {
+    function renderMessages(messages, isGroupChat = false, participants = []) {
         if (!chatMessages) return;
         chatMessages.innerHTML = messages.map(msg => {
             const isSent = msg.senderId === currentUser._id || (msg.senderId?._id || msg.senderId) === currentUser._id;
             const time   = new Date(msg.createdAt).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+            
+            let senderNameHtml = '';
+            if (!isSent && isGroupChat) {
+                const senderIdStr = msg.senderId?._id || msg.senderId;
+                const sender = participants.find(p => p._id === senderIdStr);
+                const name = sender ? sender.name : 'Unknown';
+                senderNameHtml = `<div style="font-size:0.75rem; color:var(--primary-color); margin-bottom:2px; font-weight:600;">${name}</div>`;
+            }
+
             return `
                 <div class="message-bubble ${isSent?'sent':'received'}">
+                    ${senderNameHtml}
                     ${msg.text}
                     <div class="message-time ${isSent?'sent':'received'}">${time}${isSent && msg.isRead ? ' ✓✓' : ''}</div>
                 </div>`;
@@ -167,7 +281,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!activeConvoId || activeConvoId !== convoId) return;
         try {
             const data = await apiFetch(`/messages/${convoId}`);
-            renderMessages(data.conversation.messages);
+            renderMessages(data.conversation.messages, data.conversation.isGroup, data.conversation.participants);
         } catch {}
     }
 
@@ -181,7 +295,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await apiFetch(`/messages/${activeConvoId}`, { method:'POST', body: JSON.stringify({ message: text }) });
                 messageInput.value = '';
                 const data = await apiFetch(`/messages/${activeConvoId}`);
-                renderMessages(data.conversation.messages);
+                renderMessages(data.conversation.messages, data.conversation.isGroup, data.conversation.participants);
                 loadConversations();
             } catch (err) { showNotification(err.message, 'error'); }
         } else if (initialUserId) {

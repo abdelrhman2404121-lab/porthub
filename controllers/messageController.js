@@ -207,11 +207,64 @@ const sendMessage = async (req, res) => {
     }
 };
 
+// ─── POST /api/messages/group ────────────────────────────────────────────────
+/**
+ * Create a company team group chat.
+ * Automatically adds all team members as participants.
+ */
+const createGroupChat = async (req, res) => {
+    try {
+        if (req.user.role !== 'company') {
+            return res.status(403).json({ success: false, message: 'Only companies can create group chats.' });
+        }
+
+        const { groupName, memberIds } = req.body;
+        if (!groupName) {
+            return res.status(400).json({ success: false, message: 'Group name is required.' });
+        }
+
+        let teamMembers = [];
+        if (memberIds && Array.isArray(memberIds) && memberIds.length > 0) {
+            // Verify that the provided IDs are actually in the team
+            teamMembers = req.user.team
+                .filter(t => memberIds.includes(t.userId?.toString() || t.userId))
+                .map(t => t.userId);
+        } else {
+            // Fallback: Gather all team members if none selected
+            teamMembers = req.user.team.map(t => t.userId);
+        }
+        
+        if (teamMembers.length === 0) {
+            return res.status(400).json({ success: false, message: 'No team members selected to create a group chat.' });
+        }
+
+        // Include the company itself
+        const participants = [req.user._id, ...teamMembers];
+
+        // Create the group conversation
+        const convo = await Conversation.create({
+            participants,
+            isGroup: true,
+            groupName: groupName.trim(),
+            status: 'accepted', // Group chats don't need individual acceptances
+            requestMessage: `Welcome to the ${groupName.trim()} group chat!`,
+            requestedBy: req.user._id,
+            lastMessageAt: new Date(),
+            lastMessageText: 'Group chat created.'
+        });
+
+        res.status(201).json({ success: true, conversation: convo });
+    } catch (err) {
+        console.error('Group Chat Error:', err);
+        res.status(500).json({ success: false, message: 'Could not create group chat.' });
+    }
+};
 module.exports = {
     getConversations,
     getMessages,
     sendRequest,
     acceptRequest,
     declineRequest,
-    sendMessage
+    sendMessage,
+    createGroupChat
 };

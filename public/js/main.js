@@ -155,7 +155,10 @@ function initGlobalSearch() {
         form.addEventListener('submit', e => {
             e.preventDefault();
             const q = form.querySelector('input').value.trim();
-            if (q) window.location.href = `/explore.html?q=${encodeURIComponent(q)}`;
+            if (!q) return;
+
+            // Always search users globally (redirect to explore page)
+            window.location.href = `/explore.html?q=${encodeURIComponent(q)}`;
         });
     }
 }

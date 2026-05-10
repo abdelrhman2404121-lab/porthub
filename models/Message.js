@@ -18,12 +18,16 @@ const MessageItemSchema = new mongoose.Schema({
 // ─── Conversation (Chat Room) Schema ──────────────────────────────────────────
 const ConversationSchema = new mongoose.Schema({
 
-    // ── Participants (always 2 users) ──────────────────────────────────────
+    // ── Participants (always 2 or more users) ──────────────────────────────────────
     participants: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     }],
+
+    // ── Group Chat Properties ─────────────────────────────────────────────
+    isGroup: { type: Boolean, default: false },
+    groupName: { type: String, default: '' },
 
     // ── First message (the "request" message) ─────────────────────────────
     requestMessage: { type: String, default: '' },

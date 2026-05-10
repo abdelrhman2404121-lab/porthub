@@ -64,8 +64,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (hasUnread && notifBadge) notifBadge.style.display = 'block';
 
             notifContainer.innerHTML = user.notifications.slice(0, 10).map(n => `
-                <div class="mb-3 pb-3" style="border-bottom: 1px solid var(--border-color);">
-                    <p class="text-sm m-0">${n.text}</p>
+                <div class="mb-3 p-3 glass-panel animate-fade-in" style="border-radius:var(--radius-md);">
+                    <p class="text-sm m-0" style="color:var(--text-primary);">${n.text}</p>
                     <span class="text-secondary" style="font-size:0.75rem;">${formatLastSeen(n.createdAt)}</span>
                 </div>
             `).join('');
@@ -86,10 +86,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const projContainer = document.getElementById('dash-projects');
         if (projects.length > 0) {
             projContainer.innerHTML = projects.slice(0, 4).map(p => `
-                <div style="padding:15px;background-color:var(--bg-color);border-radius:var(--radius-md);">
-                    <h4>${p.title}</h4>
-                    <p class="text-secondary text-sm mb-2">${p.description || p.desc || ''}</p>
-                    <a href="${p.liveDemo || p.link || p.githubLink || '#'}" class="text-sm" target="_blank">View Link</a>
+                <div class="p-4 glass-panel hover-lift animate-fade-in" style="border-radius:var(--radius-lg);">
+                    <h4 style="color:var(--primary-color);">${p.title}</h4>
+                    <p class="text-secondary text-sm mb-3">${p.description || p.desc || ''}</p>
+                    <a href="${p.liveDemo || p.link || p.githubLink || '#'}" class="text-sm" style="font-weight:600;" target="_blank"><i class="fas fa-external-link-alt"></i> View Link</a>
                 </div>
             `).join('');
         } else {
@@ -106,17 +106,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (pendingRequests.length > 0) {
             reqCard.style.display = 'block';
             reqContainer.innerHTML = pendingRequests.map(r => `
-                <div class="p-3 glass-panel" style="border-radius:var(--radius-md);display:flex;justify-content:space-between;align-items:center;">
+                <div class="p-4 glass-panel hover-lift animate-fade-in" style="border-radius:var(--radius-lg);display:flex;justify-content:space-between;align-items:center;">
                     <div class="flex items-center gap-3">
-                        <img src="${r.fromAvatar || 'https://i.pravatar.cc/150?img=3'}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                        <div class="avatar-ring"><img src="${r.fromAvatar || 'https://i.pravatar.cc/150?img=3'}" style="width:46px;height:46px;object-fit:cover;"></div>
                         <div>
                             <p class="m-0 text-sm"><strong>${r.fromName}</strong> ${r.type === 'join' ? 'wants to join your company.' : 'invited you to join their company.'}</p>
                             <span class="text-xs text-secondary">${formatLastSeen(r.date)}</span>
                         </div>
                     </div>
                     <div class="flex gap-2">
-                        <button class="btn btn-primary req-accept" data-id="${r._id}" style="padding:5px 10px;font-size:0.8rem;">Accept</button>
-                        <button class="btn btn-outline req-decline" data-id="${r._id}" style="padding:5px 10px;font-size:0.8rem;">Decline</button>
+                        <button class="btn btn-primary req-accept" data-id="${r._id}" style="padding:6px 16px;font-size:0.875rem;">Accept</button>
+                        <button class="btn btn-outline req-decline" data-id="${r._id}" style="padding:6px 16px;font-size:0.875rem;">Decline</button>
                     </div>
                 </div>
             `).join('');

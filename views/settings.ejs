@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
@@ -145,8 +145,18 @@
                                     <textarea id="set-bio" class="form-control" rows="4"></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <label>Avatar URL (Profile Picture)</label>
-                                    <input type="text" id="set-avatar" class="form-control">
+                                    <label>Profile Picture (Avatar)</label>
+                                    <div class="upload-drop-area" id="avatar-drop-area" style="padding: 20px; text-align: center; border: 2px dashed var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-color);">
+                                        <div class="upload-content">
+                                            <img id="avatar-preview" src="" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 10px; display: none; border: 2px solid var(--primary-color);">
+                                            <i class="fas fa-user-circle upload-icon" id="avatar-icon" style="font-size: 2rem; color: var(--text-secondary); margin-bottom: 10px;"></i>
+                                            <p class="upload-text" style="margin: 0; font-size: 0.9rem;">Drag & drop image here or <span class="upload-link" style="color: var(--primary-color);">click to browse</span></p>
+                                            <p class="upload-subtext" style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 5px;">Images (PNG, JPG, JPEG), max 50MB</p>
+                                            <input type="file" id="avatar-file-input" accept=".png,.jpg,.jpeg" style="display: none;">
+                                            <input type="hidden" id="set-avatar">
+                                        </div>
+                                    </div>
+                                    <div id="avatar-error" class="error-message" style="display: none; margin-top: 10px;"></div>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Save Changes</button>
                             </form>
@@ -170,10 +180,10 @@
                                 <h4 class="mb-3">Projects</h4>
                                 <div class="upload-drop-area" id="projects-drop-area">
                                     <div class="upload-content">
-                                        <i class="fas fa-images upload-icon"></i>
-                                        <p class="upload-text">Drag & drop project files here or <span class="upload-link">click to browse</span></p>
-                                        <p class="upload-subtext">Images (PNG, JPG, JPEG) and PDF files, max 50MB each</p>
-                                        <input type="file" id="projects-file-input" accept=".png,.jpg,.jpeg,.pdf" multiple style="display: none;">
+                                        <i class="fas fa-file-upload upload-icon"></i>
+                                        <p class="upload-text">Drag & drop project files or images here or <span class="upload-link">click to browse</span></p>
+                                        <p class="upload-subtext">Images, PDFs, Word/Excel, ZIP/RAR files, max 50MB each</p>
+                                        <input type="file" id="projects-file-input" accept=".png,.jpg,.jpeg,.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.zip,.rar,.7z" multiple style="display: none;">
                                     </div>
                                 </div>
                                 <div id="projects-files-info" class="files-info" style="display: none;"></div>

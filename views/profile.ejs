@@ -37,7 +37,7 @@
                     <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
                     <form class="search-bar" id="global-search-form">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search...">
+                        <input type="text" placeholder="Search network...">
                     </form>
                 </div>
                 <div class="nav-right">
@@ -74,7 +74,8 @@
                                 <i class="fas fa-star"></i> <span id="prof-rating">0.0</span> (<span id="prof-rating-count">0</span> reviews)
                             </div>
                         </div>
-                                            <button id="profile-viewers-btn" class="btn btn-outline" style="position: relative;">
+                            <div class="flex flex-wrap gap-2 mt-3 justify-center md:justify-start" id="profile-actions">
+                        <button id="profile-viewers-btn" class="btn btn-outline" style="position: relative; display: none;">
                         <i class="fas fa-eye"></i>
                         <span id="profile-viewers-badge" style="position: absolute; top: -4px; right: -4px; width: 8px; height: 8px; background: red; border-radius: 50%; display: none;"></span>
                     </button>
@@ -99,6 +100,11 @@
                             <h3 class="mb-2">Contact Info</h3>
                             <p class="text-sm text-secondary"><i class="fas fa-envelope"></i> <span id="prof-email">Hidden</span></p>
                             <p class="text-sm text-secondary mt-2"><i class="fas fa-phone"></i> <span id="prof-phone">Hidden</span></p>
+                        </div>
+                        
+                        <div class="card mb-4" id="ind-companies-card" style="display: none;">
+                            <h3 class="mb-2">Member Of</h3>
+                            <div id="prof-companies" class="flex flex-col gap-2"></div>
                         </div>
                         
                         <!-- Company Specific Side Cards -->

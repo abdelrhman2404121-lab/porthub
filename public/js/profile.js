@@ -51,20 +51,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const brEl = document.getElementById('prof-branches');
             if (brEl) brEl.innerHTML = (profileUser.branches||[]).length
-                ? profileUser.branches.map(b=>`<div class="p-3" style="background:var(--bg-color);border:1px solid var(--border-color);border-radius:var(--radius-md);"><h4 style="color:var(--primary-color);">${b.name}</h4><p class="text-sm text-secondary m-0"><i class="fas fa-map-marker-alt"></i> ${b.location}</p>${b.contact?`<p class="text-sm text-secondary m-0 mt-1"><i class="fas fa-envelope"></i> ${b.contact}</p>`:''}</div>`).join('')
+                ? profileUser.branches.map(b=>`<div class="p-3 glass-panel hover-lift animate-fade-in"><h4 style="color:var(--primary-color);">${b.name}</h4><p class="text-sm text-secondary m-0"><i class="fas fa-map-marker-alt"></i> ${b.location}</p>${b.contact?`<p class="text-sm text-secondary m-0 mt-1"><i class="fas fa-envelope"></i> ${b.contact}</p>`:''}</div>`).join('')
                 : '<p class="text-sm text-secondary">No branches listed.</p>';
 
             const tmEl = document.getElementById('prof-team');
             if (tmEl) tmEl.innerHTML = (profileUser.team||[]).length
-                ? profileUser.team.map(t=>`<div class="flex items-center gap-3 p-2" style="background:var(--bg-color);border-radius:var(--radius-md);"><img src="${t.avatar||'https://i.pravatar.cc/40'}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"><div><h4 class="m-0 text-sm">${t.name}</h4><p class="text-xs text-secondary m-0">${t.role}</p></div></div>`).join('')
+                ? profileUser.team.map(t=>`<div class="flex items-center gap-3 p-2 glass-panel hover-lift animate-fade-in"><div class="avatar-ring"><img src="${t.avatar||'https://i.pravatar.cc/40'}" style="width:40px;height:40px;object-fit:cover;"></div><div><h4 class="m-0 text-sm">${t.name}</h4><p class="text-xs text-secondary m-0">${t.role}</p></div></div>`).join('')
                 : '<p class="text-sm text-secondary">No team members listed.</p>';
 
             const tlEl = document.getElementById('prof-timeline');
-            if (tlEl) { const sorted=[...(profileUser.timeline||[])].sort((a,b)=>new Date(b.date)-new Date(a.date)); tlEl.innerHTML=sorted.length?sorted.map((t,i)=>`<div style="display:flex;gap:20px;margin-bottom:20px;position:relative;">${i!==sorted.length-1?'<div style="position:absolute;left:19px;top:40px;bottom:-20px;width:2px;background:var(--border-color);"></div>':''}<div style="background:rgba(59,130,246,0.1);color:var(--primary-color);width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1;"><i class="${t.icon||'fas fa-star'}"></i></div><div class="p-4" style="background:var(--bg-color);border:1px solid var(--border-color);border-radius:var(--radius-md);flex:1;"><span class="text-xs text-primary font-bold">${t.date}</span><h3 class="m-0 mt-1 mb-2">${t.title}</h3><p class="text-sm text-secondary m-0">${t.desc}</p></div></div>`).join(''):'<p class="text-sm text-secondary">No timeline events.</p>'; }
+            if (tlEl) { const sorted=[...(profileUser.timeline||[])].sort((a,b)=>new Date(b.date)-new Date(a.date)); tlEl.innerHTML=sorted.length?sorted.map((t,i)=>`<div style="display:flex;gap:20px;margin-bottom:20px;position:relative;" class="animate-fade-in">${i!==sorted.length-1?'<div style="position:absolute;left:19px;top:40px;bottom:-20px;width:2px;background:var(--border-color);"></div>':''}<div class="bg-gradient" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1;box-shadow:var(--shadow-md);"><i class="${t.icon||'fas fa-star'}"></i></div><div class="p-4 glass-panel hover-lift" style="flex:1;border-radius:var(--radius-lg);"><span class="text-xs text-primary font-bold">${t.date}</span><h3 class="m-0 mt-1 mb-2">${t.title}</h3><p class="text-sm text-secondary m-0">${t.desc}</p></div></div>`).join(''):'<p class="text-sm text-secondary">No timeline events.</p>'; }
 
             const jbEl = document.getElementById('prof-jobs');
             if (jbEl) jbEl.innerHTML = (profileUser.jobs||[]).length
-                ? profileUser.jobs.map(j=>`<div class="p-4 flex justify-between items-center" style="background:var(--bg-color);border:1px solid var(--border-color);border-radius:var(--radius-md);"><div><h4 class="m-0" style="color:var(--primary-color);">${j.title}</h4><p class="text-sm text-secondary m-0 mt-1"><i class="fas fa-map-marker-alt"></i> ${j.location}</p></div><a href="${j.link}" target="_blank" class="btn btn-primary" style="padding:6px 12px;font-size:0.875rem;">Apply Now</a></div>`).join('')
+                ? profileUser.jobs.map(j=>`<div class="p-4 flex justify-between items-center glass-panel hover-lift animate-fade-in" style="border-radius:var(--radius-lg);"><div><h4 class="m-0" style="color:var(--primary-color);">${j.title}</h4><p class="text-sm text-secondary m-0 mt-1"><i class="fas fa-map-marker-alt"></i> ${j.location}</p></div><a href="${j.link}" target="_blank" class="btn btn-primary" style="padding:6px 16px;font-size:0.875rem;">Apply Now</a></div>`).join('')
                 : '<p class="text-sm text-secondary">No open positions.</p>';
         } else {
             const skEl = document.getElementById('prof-skills');
@@ -81,6 +81,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (edEl) edEl.innerHTML = (profileUser.education||[]).length
                 ? profileUser.education.map(e=>`<div class="mb-3" style="border-left:2px solid var(--border-color);padding-left:15px;"><h4 style="color:var(--primary-color);">${e.degree}</h4><p class="text-secondary text-sm">${e.school} | ${e.year||''}</p></div>`).join('')
                 : '<p class="text-sm text-secondary">No education listed.</p>';
+
+            const compCard = document.getElementById('ind-companies-card');
+            const compEl = document.getElementById('prof-companies');
+            if (compCard && compEl) {
+                if ((profileUser.companies||[]).length > 0) {
+                    compCard.style.display = 'block';
+                    compEl.innerHTML = profileUser.companies.map(c => `
+                        <a href="profile.html?id=${c._id}" class="flex items-center gap-3 p-2 glass-panel hover-lift animate-fade-in" style="border-radius:var(--radius-lg);text-decoration:none;color:inherit;">
+                            <div class="avatar-ring"><img src="${c.profileImage || `https://i.pravatar.cc/150?u=${c._id}`}" style="width:40px;height:40px;object-fit:cover;"></div>
+                            <div>
+                                <h4 class="m-0 text-sm" style="color:var(--primary-color);">${c.name}</h4>
+                            </div>
+                        </a>
+                    `).join('');
+                } else {
+                    compCard.style.display = 'none';
+                }
+            }
         }
 
         // Projects
@@ -90,7 +108,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const pd = await apiFetch(`/projects/user/${userId}`);
                 const projects = pd.projects || [];
                 projEl.innerHTML = projects.length
-                    ? projects.map(p=>`<div style="padding:15px;background:var(--bg-color);border-radius:var(--radius-md);border:1px solid var(--border-color);"><h4>${p.title}</h4><p class="text-secondary text-sm mb-2">${p.description||p.desc||''}</p>${p.githubLink?`<a href="${p.githubLink}" target="_blank" class="text-sm mr-2"><i class="fab fa-github"></i> GitHub</a>`:''}${p.liveDemo?`<a href="${p.liveDemo}" target="_blank" class="text-sm"><i class="fas fa-external-link-alt"></i> Live</a>`:''}</div>`).join('')
+                    ? projects.map(p => {
+                        let mediaHtml = '';
+                        if (p.image) {
+                            const isImage = /\.(png|jpe?g|gif|webp)$/i.test(p.image);
+                            if (isImage) {
+                                mediaHtml = `<img src="${p.image}" alt="${p.title}" style="width:100%;height:160px;object-fit:cover;border-radius:var(--radius-md);margin-bottom:12px;">`;
+                            } else {
+                                const ext = p.image.split('.').pop().toUpperCase();
+                                mediaHtml = `
+                                    <div style="background:rgba(255,255,255,0.05);padding:15px;text-align:center;border-radius:var(--radius-md);margin-bottom:12px;border:1px solid var(--border-color);">
+                                        <i class="fas fa-file-alt" style="font-size:1.5rem;color:var(--text-secondary);margin-bottom:5px;"></i>
+                                        <br>
+                                        <a href="${p.image}" target="_blank" class="btn btn-outline btn-sm" style="font-size:0.75rem;"><i class="fas fa-download"></i> Download (${ext})</a>
+                                    </div>`;
+                            }
+                        }
+                        return `<div class="glass-panel hover-lift animate-fade-in" style="padding:20px;border-radius:var(--radius-lg);">${mediaHtml}<h4>${p.title}</h4><p class="text-secondary text-sm mb-3">${p.description||p.desc||''}</p>${p.githubLink?`<a href="${p.githubLink}" target="_blank" class="text-sm mr-3" style="font-weight:600;"><i class="fab fa-github"></i> GitHub</a>`:''}${p.liveDemo?`<a href="${p.liveDemo}" target="_blank" class="text-sm" style="font-weight:600;"><i class="fas fa-external-link-alt"></i> Live</a>`:''}</div>`;
+                    }).join('')
                     : '<p class="text-sm text-secondary">No projects listed.</p>';
             } catch { projEl.innerHTML = '<p class="text-sm text-secondary">Could not load projects.</p>'; }
         }
@@ -104,7 +139,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 commEl.innerHTML = (cd.comments||[]).length
                     ? cd.comments.map(c => {
                         const au = c.userId || {};
-                        return `<div class="mb-3 p-3" style="background:var(--bg-color);border-radius:var(--radius-md);"><div class="flex justify-between items-center mb-1"><div class="flex items-center gap-2"><img src="${au.profileImage||`https://i.pravatar.cc/30?u=${au._id}`}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;"><strong>${au.name||'Anonymous'}</strong></div><span class="text-sm text-secondary">${formatLastSeen(c.createdAt)}</span></div>${c.rating?`<div style="color:#fbbf24;">${'★'.repeat(c.rating)}</div>`:''}<p class="text-sm mt-1">${c.comment}</p>${currentUser&&(currentUser._id===String(au._id)||currentUser.role==='admin')?`<button class="btn btn-outline" style="padding:2px 8px;font-size:0.75rem;color:var(--danger);border-color:var(--danger);" onclick="window.delComment('${c._id}')">Delete</button>`:''}</div>`;
+                        return `<div class="mb-3 p-4 glass-panel animate-fade-in" style="border-radius:var(--radius-lg);"><div class="flex justify-between items-center mb-2"><div class="flex items-center gap-3"><div class="avatar-ring"><img src="${au.profileImage||`https://i.pravatar.cc/30?u=${au._id}`}" style="width:36px;height:36px;object-fit:cover;"></div><strong>${au.name||'Anonymous'}</strong></div><span class="text-sm text-secondary">${formatLastSeen(c.createdAt)}</span></div>${c.rating?`<div style="color:#fbbf24;font-size:1.2rem;" class="mb-2">${'★'.repeat(c.rating)}</div>`:''}<p class="text-sm m-0">${c.comment}</p>${currentUser&&(currentUser._id===String(au._id)||currentUser.role==='admin')?`<button class="btn btn-outline mt-3" style="padding:4px 12px;font-size:0.75rem;color:var(--danger);border-color:var(--danger);" onclick="window.delComment('${c._id}')">Delete</button>`:''}</div>`;
                     }).join('')
                     : '<p class="text-sm text-secondary">No comments yet.</p>';
             } catch {}
@@ -124,9 +159,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const viewersList  = document.getElementById('profile-modal-viewers-list');
         const closeViewersModal = document.getElementById('close-profile-viewers-modal');
 
-        if (viewersBtn && profileUser.viewers && profileUser.viewers.length > 0) {
-            viewersBadge && (viewersBadge.style.display = 'block');
-            viewersBtn.setAttribute('title', `${profileUser.viewers.length} viewer${profileUser.viewers.length !== 1 ? 's' : ''}`);
+        if (viewersBtn && currentUser && currentUser._id === userId) {
+            viewersBtn.style.display = 'inline-block';
+            if (profileUser.viewers && profileUser.viewers.length > 0) {
+                viewersBadge && (viewersBadge.style.display = 'block');
+                viewersBtn.setAttribute('title', `${profileUser.viewers.length} viewer${profileUser.viewers.length !== 1 ? 's' : ''}`);
+            }
         }
 
         if (viewersBtn) {
@@ -135,15 +173,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                     return;
                 }
                 viewersList.innerHTML = profileUser.viewers.map(v => `
-                    <div class="flex items-center justify-between p-2" style="background: rgba(255,255,255,0.1); border-radius: var(--radius-md);">
+                    <div class="flex items-center justify-between p-3 glass-panel hover-lift animate-fade-in" style="border-radius: var(--radius-lg); margin-bottom: 8px;">
                         <div class="flex items-center gap-3">
-                            <img src="${v.avatar || `https://i.pravatar.cc/40?u=${v.userId}`}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+                            <div class="avatar-ring"><img src="${v.avatar || `https://i.pravatar.cc/40?u=${v.userId}`}" style="width:40px;height:40px;object-fit:cover;"></div>
                             <div>
-                                <p class="m-0 text-sm font-bold" style="color:white;">${v.name || 'Unknown'}</p>
-                                <p class="m-0 text-xs" style="color:rgba(255,255,255,0.7);">${formatLastSeen(v.viewedAt)}</p>
+                                <p class="m-0 text-sm font-bold" style="color:var(--primary-color);">${v.name || 'Unknown'}</p>
+                                <p class="m-0 text-xs text-secondary">${formatLastSeen(v.viewedAt)}</p>
                             </div>
                         </div>
-                        <a href="/profile.html?id=${v.userId}" class="btn btn-sm" style="background:white;color:var(--primary-color);padding:4px 10px;font-size:0.8rem;">View</a>
+                        <a href="/profile.html?id=${v.userId}" class="btn btn-primary btn-sm" style="padding:6px 12px;font-size:0.8rem;">View</a>
                     </div>`).join('');
                 viewersModal.style.display = 'flex';
             });
@@ -155,15 +193,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Interactions for other logged-in users
 
-        if (currentUser && currentUser._id !== userId) {
+        if (currentUser) {
             const loginNotice = document.getElementById('login-to-comment');
             const commentForm = document.getElementById('comment-form');
-            const rateBtn     = document.getElementById('rate-btn');
             if (loginNotice) loginNotice.style.display = 'none';
-            if (commentForm) commentForm.style.display = 'block';
-            if (rateBtn)     rateBtn.style.display     = 'inline-flex';
-
             if (commentForm) {
+                commentForm.style.display = 'block';
                 commentForm.addEventListener('submit', async e => {
                     e.preventDefault();
                     const text = document.getElementById('comment-text').value.trim();
@@ -176,6 +211,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     } catch (err) { showNotification(err.message, 'error'); }
                 });
             }
+        }
+
+        if (currentUser && currentUser._id !== userId) {
+            const rateBtn = document.getElementById('rate-btn');
+            if (rateBtn) rateBtn.style.display = 'inline-flex';
 
             const modal = document.getElementById('rating-modal');
             if (rateBtn && modal) {
@@ -196,22 +236,80 @@ document.addEventListener('DOMContentLoaded', async () => {
             const connectBtn = document.getElementById('connect-btn');
             if (connectBtn) {
                 let type='', text='', canConnect=false;
-                if (currentUser.role==='individual' && profileUser.role==='company') { canConnect=true; type='join';   text='<i class="fas fa-handshake"></i> Request to Join'; }
-                if (currentUser.role==='company'    && profileUser.role==='individual') { canConnect=true; type='invite'; text='<i class="fas fa-user-plus"></i> Invite to Team'; }
-                if (canConnect) {
+                let alreadyInTeam = false;
+                let companyId = null;
+
+                // Case 1: Individual viewing a Company profile
+                if (currentUser.role === 'individual' && profileUser.role === 'company' && profileUser.team) {
+                    // profileUser.team.userId might be populated as an object
+                    alreadyInTeam = profileUser.team.some(t => {
+                        const tId = (t.userId && t.userId._id) ? t.userId._id : t.userId;
+                        return String(tId) === String(currentUser._id);
+                    });
+                    companyId = profileUser._id;
+                }
+                
+                // Case 2: Company viewing an Individual profile
+                if (currentUser.role === 'company' && profileUser.role === 'individual' && currentUser.team) {
+                    alreadyInTeam = currentUser.team.some(t => {
+                        const tId = (t.userId && t.userId._id) ? t.userId._id : t.userId;
+                        return String(tId) === String(profileUser._id);
+                    });
+                    companyId = currentUser._id;
+                }
+
+                if (alreadyInTeam) {
                     connectBtn.style.display = 'inline-flex';
-                    const hasPending = (profileUser.requests||[]).some(r => r.fromId && String(r.fromId)===currentUser._id && r.status==='pending');
-                    if (hasPending) { connectBtn.innerHTML='<i class="fas fa-clock"></i> Request Pending'; connectBtn.disabled=true; }
-                    else {
-                        connectBtn.innerHTML = text;
+                    connectBtn.style.backgroundColor = 'var(--danger)';
+                    connectBtn.style.borderColor = 'var(--danger)';
+                    
+                    if (currentUser.role === 'individual') {
+                        connectBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Leave Team';
                         connectBtn.addEventListener('click', async () => {
+                            if (!confirm('Are you sure you want to leave this team?')) return;
                             try {
-                                await apiFetch(`/users/${userId}/request`, { method:'POST', body: JSON.stringify({ type }) });
-                                showNotification(type==='join' ? 'Request sent!' : 'Invitation sent!');
-                                connectBtn.innerHTML = '<i class="fas fa-clock"></i> Request Pending';
-                                connectBtn.disabled  = true;
+                                await apiFetch(`/users/${companyId}/team/${currentUser._id}`, { method: 'DELETE' });
+                                showNotification('You have left the team.');
+                                setTimeout(() => window.location.reload(), 1000);
                             } catch (err) { showNotification(err.message, 'error'); }
                         });
+                    } else if (currentUser.role === 'company') {
+                        connectBtn.innerHTML = '<i class="fas fa-user-minus"></i> Remove from Team';
+                        connectBtn.addEventListener('click', async () => {
+                            if (!confirm('Are you sure you want to remove this user from your team?')) return;
+                            try {
+                                await apiFetch(`/users/${companyId}/team/${profileUser._id}`, { method: 'DELETE' });
+                                showNotification('User removed from team.');
+                                
+                                // Update currentUser in localStorage to reflect the removed member
+                                currentUser.team = currentUser.team.filter(t => {
+                                    const tId = (t.userId && t.userId._id) ? t.userId._id : t.userId;
+                                    return String(tId) !== String(profileUser._id);
+                                });
+                                setSession(getToken(), currentUser);
+                                
+                                setTimeout(() => window.location.reload(), 1000);
+                            } catch (err) { showNotification(err.message, 'error'); }
+                        });
+                    }
+                } else {
+                    if (currentUser.role==='individual' && profileUser.role==='company') { canConnect=true; type='join';   text='<i class="fas fa-handshake"></i> Request to Join'; }
+                    if (currentUser.role==='company'    && profileUser.role==='individual') { canConnect=true; type='invite'; text='<i class="fas fa-user-plus"></i> Invite to Team'; }
+                    if (canConnect) {
+                        connectBtn.style.display = 'inline-flex';
+                        const hasPending = (profileUser.requests||[]).some(r => r.fromId && String(r.fromId)===currentUser._id && r.status==='pending');
+                        if (hasPending) { connectBtn.innerHTML='<i class="fas fa-clock"></i> Request Pending'; connectBtn.disabled=true; }
+                        else {
+                            connectBtn.innerHTML = text;
+                            connectBtn.addEventListener('click', async () => {
+                                try {
+                                    await apiFetch(`/users/${userId}/request`, { method:'POST', body: JSON.stringify({ type }) });
+                                    showNotification(type==='join' ? 'Request sent!' : 'Invitation sent!');
+                                    connectBtn.innerHTML = '<i class="fas fa-clock"></i> Request Pending';
+                                    connectBtn.disabled  = true;
+                                } catch (err) { showNotification(err.message, 'error'); }
+                            });
+                        }
                     }
                 }
             }

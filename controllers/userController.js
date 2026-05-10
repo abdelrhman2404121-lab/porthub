@@ -124,7 +124,18 @@ const getUserById = async (req, res) => {
             }
         }
 
-        res.status(200).json({ success: true, user: profileUser });
+        let userData = profileUser.toObject();
+
+        // If the user is an individual, find which companies they belong to
+        if (userData.role === 'individual') {
+            const memberCompanies = await User.find({ 
+                role: 'company', 
+                'team.userId': userData._id 
+            }).select('_id name profileImage');
+            userData.companies = memberCompanies;
+        }
+
+        res.status(200).json({ success: true, user: userData });
     } catch (err) {
         console.error('getUserById error:', err);
         res.status(500).json({ success: false, message: 'Could not fetch user profile.' });
@@ -462,14 +473,33 @@ const handleConnectRequest = async (req, res) => {
         if (status === 'accepted' && reqItem.type === 'join') {
             const individual = await User.findById(reqItem.fromId);
             if (individual && currentUser.role === 'company') {
-                const alreadyInTeam = currentUser.team.some(t => t.name === individual.name);
+                const alreadyInTeam = currentUser.team.some(t => String(t.userId) === String(individual._id));
                 if (!alreadyInTeam) {
                     currentUser.team.push({
                         userId: individual._id,
                         name:   individual.name,
                         role:   individual.title || 'Team Member',
-                        avatar: individual.profileImage
+                        avatar: individual.profileImage,
+                        status: 'accepted'
                     });
+                }
+            }
+        }
+
+        // If accepted and type is 'invite': company invited individual, individual accepts
+        if (status === 'accepted' && reqItem.type === 'invite') {
+            const company = await User.findById(reqItem.fromId);
+            if (company && company.role === 'company' && currentUser.role === 'individual') {
+                const alreadyInTeam = company.team.some(t => String(t.userId) === String(currentUser._id));
+                if (!alreadyInTeam) {
+                    company.team.push({
+                        userId: currentUser._id,
+                        name:   currentUser.name,
+                        role:   currentUser.title || 'Team Member',
+                        avatar: currentUser.profileImage,
+                        status: 'accepted'
+                    });
+                    await company.save({ validateBeforeSave: false });
                 }
             }
         }
@@ -479,6 +509,44 @@ const handleConnectRequest = async (req, res) => {
     } catch (err) {
         console.error('handleConnectRequest error:', err);
         res.status(500).json({ success: false, message: 'Could not handle request.' });
+    }
+};
+
+// ─── DELETE /api/users/:companyId/team/:memberId ──────────────────────────────
+/**
+ * Remove a team member.
+ * If user is company, they can remove any member from their team.
+ * If user is individual, they can remove themselves from a company's team.
+ */
+const removeTeamMember = async (req, res) => {
+    try {
+        const { companyId, memberId } = req.params;
+        
+        // Authorization check
+        if (req.user.role === 'company' && req.user._id.toString() !== companyId) {
+            return res.status(403).json({ success: false, message: 'Not authorized to modify this company.' });
+        }
+        if (req.user.role === 'individual' && req.user._id.toString() !== memberId) {
+            return res.status(403).json({ success: false, message: 'Not authorized to remove this member.' });
+        }
+
+        const company = await User.findById(companyId);
+        if (!company || company.role !== 'company') {
+            return res.status(404).json({ success: false, message: 'Company not found.' });
+        }
+
+        const initialLength = company.team.length;
+        company.team = company.team.filter(t => String(t.userId) !== memberId);
+
+        if (company.team.length === initialLength) {
+            return res.status(404).json({ success: false, message: 'Member not found in team.' });
+        }
+
+        await company.save({ validateBeforeSave: false });
+        res.status(200).json({ success: true, message: 'Team member removed.', team: company.team });
+    } catch (err) {
+        console.error('removeTeamMember error:', err);
+        res.status(500).json({ success: false, message: 'Could not remove team member.' });
     }
 };
 
@@ -498,5 +566,6 @@ module.exports = {
     markNotificationsRead,
     getViewers,
     sendConnectRequest,
-    handleConnectRequest
+    handleConnectRequest,
+    removeTeamMember
 };

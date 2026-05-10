@@ -11,6 +11,13 @@ const sendTokenResponse = (user, statusCode, res) => {
     delete userObj.password;
     delete userObj.ratedBy;
 
+    // Set cookie for EJS Server-Side Rendering
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
     res.status(statusCode).json({
         success: true,
         token,
@@ -139,6 +146,7 @@ const logout = async (req, res) => {
                 lastSeen: new Date()
             });
         }
+        res.clearCookie('token');
         res.status(200).json({ success: true, message: 'Logged out successfully.' });
     } catch (err) {
         res.status(500).json({ success: false, message: 'Logout error.' });

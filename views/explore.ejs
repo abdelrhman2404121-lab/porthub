@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PortfolioHub | Explore</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/chatbot.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-logo">
+                    <i class="fas fa-layer-group"></i> PortHub
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="explore.html"><i class="fas fa-compass"></i> Explore</a></li>
+                    <li><a href="projects.html"><i class="fas fa-briefcase"></i> Projects</a></li>
+                    <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+                    <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                    <li><a href="messages.html"><i class="fas fa-comments"></i> Messages</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content" id="main-content">
+            <!-- Navbar -->
+            <nav class="navbar">
+                <div class="nav-left">
+                    <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <form class="search-bar" id="global-search-form">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search network...">
+                    </form>
+                </div>
+                <div class="nav-right">
+                    <button class="theme-toggle" id="theme-toggle"><i class="fas fa-moon" id="theme-icon"></i></button>
+                    <div class="auth-links flex gap-2" id="auth-links" style="display: none;">
+                        <a href="login.html" class="btn btn-outline">Login</a>
+                        <a href="register.html" class="btn btn-primary">Register</a>
+                    </div>
+                    <div class="user-menu-section" id="user-menu-section">
+                        <div class="user-menu" id="user-menu">
+                            <span id="user-greeting">Hi, Guest</span>
+                            <img src="https://i.pravatar.cc/150?img=3" alt="Avatar" class="user-avatar" id="nav-avatar">
+                            <i class="fas fa-chevron-down text-sm"></i>
+                            <div class="dropdown-menu" id="user-dropdown">
+                                <a href="dashboard.html">Dashboard</a>
+                                <a href="profile.html?id=me">My Profile</a>
+                                <a href="#" id="logout-btn">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="page-content animate-fade-in">
+                <div class="flex justify-between items-center mb-4">
+                    <h2>Explore Network</h2>
+                    <div class="flex gap-2">
+                        <select id="type-filter" class="form-control" style="width: auto;">
+                            <option value="all">All Types</option>
+                            <option value="individual">Individuals</option>
+                            <option value="company">Companies</option>
+                        </select>
+                        <select id="sort-filter" class="form-control" style="width: auto;">
+                            <option value="newest">Newest</option>
+                            <option value="rating">Top Rated</option>
+                        </select>
+                        <input type="text" id="page-search" class="form-control" placeholder="Search by name, role, or company..." style="width: 250px;">
+                    </div>
+                </div>
+
+                <div id="no-results" class="text-center" style="display: none; padding: 40px;">
+                    <h3>No professionals found.</h3>
+                </div>
+
+                <div class="grid grid-cols-4" id="explore-grid">
+                    <% if (typeof users !== 'undefined' && users.length > 0) { %>
+                        <% users.forEach(function(user, i) { %>
+                            <div class="card card-3d card-enter text-center" style="position:relative; animation-delay: <%= i * 55 %>ms;">
+                                <% if (user.role === 'company') { %>
+                                    <span class="badge badge-company" style="position:absolute;top:12px;right:12px;">Company</span>
+                                <% } else { %>
+                                    <span class="badge badge-user" style="position:absolute;top:12px;right:12px;">Individual</span>
+                                <% } %>
+                                <div style="position:relative;width:84px;height:84px;margin:16px auto 12px;">
+                                    <img src="<%= user.profileImage || `https://i.pravatar.cc/150?u=${user.email}` %>" alt="<%= user.name %>"
+                                         style="width:84px;height:84px;border-radius:50%;object-fit:cover;
+                                                border:3px solid var(--border-color);transition:transform 0.3s ease,box-shadow 0.3s ease;"
+                                         onmouseover="this.style.transform='scale(1.08)';this.style.boxShadow='0 0 0 4px var(--secondary-color)'"
+                                         onmouseout="this.style.transform='';this.style.boxShadow=''">
+                                    <% if (user.isOnline) { %>
+                                        <span class="online-dot" style="position:absolute;bottom:3px;right:3px;width:14px;height:14px;border:2px solid var(--surface-color);" title="Online"></span>
+                                    <% } %>
+                                </div>
+                                <h3 style="margin-bottom:4px;"><%= user.name %></h3>
+                                <p class="text-secondary mb-1" style="min-height:22px;font-size:0.9rem;"><%= user.title || (user.role === 'company' ? 'Company' : 'Professional') %></p>
+                                
+                                <% if (user.role === 'company') { %>
+                                    <p class="text-secondary mb-2" style="font-size:0.8rem;min-height:20px;"><%= user.industry || '' %> <%= user.companySize ? '· ' + user.companySize + ' employees' : '' %></p>
+                                <% } else { %>
+                                    <p class="text-secondary mb-2" style="font-size:0.8rem;min-height:20px;"><%= (user.skills || []).slice(0, 3).join(' · ') %></p>
+                                <% } %>
+                                
+                                <div style="color:#fbbf24;font-size:0.85rem;margin-bottom:14px;">
+                                    <i class="fas fa-star"></i> <%= (user.rating || 0).toFixed(1) %>
+                                    <span style="color:var(--text-secondary);font-size:0.8rem;">(<%= user.ratingCount || 0 %>)</span>
+                                </div>
+                                <a href="/profile.html?id=<%= user._id %>" class="btn btn-primary w-full">
+                                    <i class="fas fa-user"></i> View Profile
+                                </a>
+                            </div>
+                        <% }); %>
+                    <% } %>
+                </div>
+            </div>
+            
+            <footer class="footer">
+                <p>&copy; 2026 PortfolioHub. All rights reserved.</p>
+            </footer>
+        </main>
+    </div>
+    <script src="/js/main.js"></script>
+    <script src="/js/explore.js"></script>
+    <!-- === AI CHATBOT WIDGET === -->
+<div id="ph-chatbot-widget">
+  <button id="ph-chat-toggle" type="button" title="AI Career Advisor">ðŸ’¬</button>
+  <div id="ph-chat-window" class="ph-chat-hidden">
+    <div id="ph-chat-header">
+      <span>AI Career Advisor</span>
+      <button id="ph-chat-close" type="button">âœ–</button>
+    </div>
+    <div id="ph-chat-messages"></div>
+    <div id="ph-chat-input-area">
+      <input type="text" id="ph-chat-input" placeholder="Ask about interviews, salaries..." autocomplete="off">
+      <button id="ph-chat-send" type="button">âž¤</button>
+    </div>
+  </div>
+</div>
+
+<!-- === CHATBOT SCRIPT === -->
+<script src="/js/chatbot.js"></script>
+</body>
+</html>
+

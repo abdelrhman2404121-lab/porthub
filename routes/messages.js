@@ -10,7 +10,8 @@ const {
     sendRequest,
     acceptRequest,
     declineRequest,
-    sendMessage
+    sendMessage,
+    createGroupChat
 } = require('../controllers/messageController');
 
 const { protect } = require('../middleware/auth');
@@ -23,6 +24,9 @@ router.get('/conversations',                getConversations);
 
 // POST /api/messages/request               — send a new message request
 router.post('/request',                     sendRequest);
+
+// POST /api/messages/group                 — create a company team group chat
+router.post('/group',                       createGroupChat);
 
 // GET  /api/messages/:conversationId       — get messages in a conversation
 router.get('/:conversationId',              getMessages);

@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PortfolioHub | Explore</title>
+    <title>PortfolioHub | Projects</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/chatbot.css">
@@ -29,6 +29,7 @@
             </nav>
         </aside>
 
+        <!-- Main Content -->
         <main class="main-content" id="main-content">
             <!-- Navbar -->
             <nav class="navbar">
@@ -36,7 +37,7 @@
                     <button class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></button>
                     <form class="search-bar" id="global-search-form">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search users...">
+                        <input type="text" placeholder="Search network...">
                     </form>
                 </div>
                 <div class="nav-right">
@@ -62,49 +63,36 @@
 
             <div class="page-content animate-fade-in">
                 <div class="flex justify-between items-center mb-4">
-                    <h2>Explore Network</h2>
+                    <h2>Discover Projects</h2>
                     <div class="flex gap-2">
-                        <select id="type-filter" class="form-control" style="width: auto;">
-                            <option value="all">All Types</option>
-                            <option value="individual">Individuals</option>
-                            <option value="company">Companies</option>
-                        </select>
-                        <select id="sort-filter" class="form-control" style="width: auto;">
-                            <option value="newest">Newest</option>
-                            <option value="rating">Top Rated</option>
-                        </select>
-                        <input type="text" id="page-search" class="form-control" placeholder="Search by name, role, or company..." style="width: 250px;">
+                        <input type="text" id="project-page-search" class="form-control" placeholder="Search projects by title or tech..." style="width: 250px;">
                     </div>
                 </div>
 
-                <div id="no-results" class="text-center" style="display: none; padding: 40px;">
-                    <h3>No professionals found.</h3>
-                </div>
-
-                <div class="grid grid-cols-4" id="explore-grid">
+                <div class="grid grid-cols-3" id="projects-grid">
                     <!-- Populated by JS -->
                 </div>
             </div>
-            
+
             <footer class="footer">
                 <p>&copy; 2026 PortfolioHub. All rights reserved.</p>
             </footer>
         </main>
     </div>
     <script src="/js/main.js"></script>
-    <script src="/js/explore.js"></script>
+    <script src="/js/projects.js"></script>
     <!-- === AI CHATBOT WIDGET === -->
 <div id="ph-chatbot-widget">
-  <button id="ph-chat-toggle" type="button" title="AI Career Advisor">ðŸ’¬</button>
+  <button id="ph-chat-toggle" type="button" title="AI Career Advisor">💬</button>
   <div id="ph-chat-window" class="ph-chat-hidden">
     <div id="ph-chat-header">
       <span>AI Career Advisor</span>
-      <button id="ph-chat-close" type="button">âœ–</button>
+      <button id="ph-chat-close" type="button">✖</button>
     </div>
     <div id="ph-chat-messages"></div>
     <div id="ph-chat-input-area">
       <input type="text" id="ph-chat-input" placeholder="Ask about interviews, salaries..." autocomplete="off">
-      <button id="ph-chat-send" type="button">âž¤</button>
+      <button id="ph-chat-send" type="button">➤</button>
     </div>
   </div>
 </div>

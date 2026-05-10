@@ -20,7 +20,8 @@ const {
     markNotificationsRead,
     getViewers,
     sendConnectRequest,
-    handleConnectRequest
+    handleConnectRequest,
+    removeTeamMember
 } = require('../controllers/userController');
 
 const { protect, optionalAuth } = require('../middleware/auth');
@@ -56,6 +57,9 @@ router.get('/me/viewers', protect, getViewers);
 
 // Connect Requests (accept/decline)
 router.put('/requests/:id',     protect, handleConnectRequest);
+
+// Remove Team Member (Company removes member or individual leaves company)
+router.delete('/:companyId/team/:memberId', protect, removeTeamMember);
 
 // ── Wildcard routes — MUST be last ────────────────────────────────────────────
 

@@ -12,11 +12,13 @@ const protect = async (req, res, next) => {
     try {
         let token;
 
-        // 1) Read token from Authorization header or query param
+        // 1) Read token from Authorization header, query param, or cookies
         if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
             token = req.headers.authorization.split(' ')[1];
         } else if (req.query.token) {
             token = req.query.token;
+        } else if (req.cookies && req.cookies.token) {
+            token = req.cookies.token;
         }
 
         if (!token) {
@@ -77,6 +79,8 @@ const optionalAuth = async (req, res, next) => {
         let token;
         if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
             token = req.headers.authorization.split(' ')[1];
+        } else if (req.cookies && req.cookies.token) {
+            token = req.cookies.token;
         }
 
         if (token) {

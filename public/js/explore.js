@@ -102,5 +102,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (sortFilter) sortFilter.addEventListener('change', fetchAndRender);
     if (typeFilter) typeFilter.addEventListener('change', fetchAndRender);
 
-    fetchAndRender();
+    // fetchAndRender(); // Disabled to allow EJS SSR on initial load
 });
