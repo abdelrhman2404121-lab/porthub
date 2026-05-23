@@ -46,7 +46,12 @@
                 <div class="form-group">
                     <label>Password</label>
                     <input type="password" id="reg-password" class="form-control" placeholder="••••••••">
-                    <span class="error-message" id="reg-password-error">Password must be at least 6 characters</span>
+                    <!-- Password Strength Indicator -->
+                    <div id="password-strength-bar" style="margin-top:6px;height:4px;border-radius:4px;background:var(--border-color);transition:all 0.3s;">
+                        <div id="password-strength-fill" style="height:100%;width:0%;border-radius:4px;transition:all 0.3s;"></div>
+                    </div>
+                    <span id="password-strength-label" style="font-size:12px;margin-top:4px;display:block;color:var(--text-secondary);"></span>
+                    <span class="error-message" id="reg-password-error">Password must be 8+ chars with a letter and a number</span>
                 </div>
                 <div class="form-group">
                     <label>Confirm Password</label>

@@ -56,8 +56,23 @@ http://localhost:5000
 
 ## API Endpoints
 All API routes are prefixed with `/api/`
-- `POST /api/auth/register` — Register
-- `POST /api/auth/login` — Login
-- `GET  /api/users` — Search/explore users
-- `GET  /api/projects` — Get projects
-- `POST /api/messages/request` — Send message request
+- **Auth**: `/api/auth/register`, `/api/auth/login`, `/api/auth/logout`, `/api/auth/me`
+- **Users**: `/api/users/profile`, `/api/users/settings`, `/api/users/experience`, `/api/users/education`, `/api/users/requests`
+- **Projects**: `/api/projects` (Create, Read, Update, Delete)
+- **Messages**: `/api/messages` (Conversations, room chats)
+- **Comments/Ratings**: `/api/comments` (Add, Delete, Admin Moderation)
+- **Admin**: `/api/admin/stats`, `/api/admin/users`, `/api/admin/comments`
+
+## Backend Architecture Documentation
+A comprehensive technical manual detailing the entire backend design from A to Z has been generated as a PDF on the root of the project:
+👉 **[backend_architecture_guide.pdf](backend_architecture_guide.pdf)**
+
+This report covers:
+1. MVC Architecture & System Design Flow
+2. Backend Folder/File Structural Blueprints
+3. Mongoose Schemas & Subdocument Array CRUD Operations
+4. JWT + Cookie Session Flow & Authentication Guards
+5. Detailed REST API Endpoint Reference tables
+6. Multer-Powered Secure File Upload Setup
+7. Centralized Error Handling & Input Validation Systems
+8. Real-time Messaging Mechanics & Viewer Analytics

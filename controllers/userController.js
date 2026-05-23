@@ -176,6 +176,19 @@ const updateProfile = async (req, res) => {
             companyFields.forEach(field => {
                 if (req.body[field] !== undefined) user[field] = req.body[field];
             });
+
+            if (req.body.branches !== undefined) user.branches = req.body.branches;
+            if (req.body.team !== undefined) user.team = req.body.team;
+            if (req.body.jobs !== undefined) user.jobs = req.body.jobs;
+            
+            if (req.body.timeline !== undefined) {
+                user.timeline = req.body.timeline.map(t => ({
+                    title: t.title,
+                    desc: t.description !== undefined ? t.description : t.desc,
+                    date: t.date,
+                    icon: t.icon
+                }));
+            }
         }
 
         await user.save({ validateBeforeSave: false });
@@ -286,6 +299,26 @@ const removeExperience = async (req, res) => {
     }
 };
 
+// ─── PUT /api/users/experience/:id ───────────────────────────────────────────
+const updateExperience = async (req, res) => {
+    try {
+        const { role, company, years, description } = req.body;
+        const user = await User.findById(req.user._id);
+        const exp = user.experience.id(req.params.id);
+        if (!exp) return res.status(404).json({ success: false, message: 'Experience not found.' });
+
+        if (role) exp.role = role;
+        if (company) exp.company = company;
+        if (years) exp.years = years;
+        if (description !== undefined) exp.description = description;
+
+        await user.save({ validateBeforeSave: false });
+        res.status(200).json({ success: true, experience: user.experience });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Could not update experience.' });
+    }
+};
+
 // ─── POST /api/users/education ────────────────────────────────────────────────
 const addEducation = async (req, res) => {
     try {
@@ -311,6 +344,26 @@ const removeEducation = async (req, res) => {
         res.status(200).json({ success: true, education: user.education });
     } catch (err) {
         res.status(500).json({ success: false, message: 'Could not remove education.' });
+    }
+};
+
+// ─── PUT /api/users/education/:id ────────────────────────────────────────────
+const updateEducation = async (req, res) => {
+    try {
+        const { degree, school, year, description } = req.body;
+        const user = await User.findById(req.user._id);
+        const edu = user.education.id(req.params.id);
+        if (!edu) return res.status(404).json({ success: false, message: 'Education not found.' });
+
+        if (degree) edu.degree = degree;
+        if (school) edu.school = school;
+        if (year) edu.year = year;
+        if (description !== undefined) edu.description = description;
+
+        await user.save({ validateBeforeSave: false });
+        res.status(200).json({ success: true, education: user.education });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Could not update education.' });
     }
 };
 
@@ -559,8 +612,10 @@ module.exports = {
     removeSkill,
     addExperience,
     removeExperience,
+    updateExperience,
     addEducation,
     removeEducation,
+    updateEducation,
     rateUser,
     getNotifications,
     markNotificationsRead,

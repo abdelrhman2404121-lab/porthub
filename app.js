@@ -41,7 +41,7 @@ const User = require('./models/User');
 
 // ─── Serve EJS Views ─────────────────────────────────────────────────────────
 // Support legacy .html extension requests by redirecting to the EJS equivalent
-const legacyPages = ['index', 'login', 'register', 'dashboard', 'profile', 'settings', 'messages', 'explore', 'projects', 'about', 'contact'];
+const legacyPages = ['index', 'login', 'register', 'dashboard', 'profile', 'settings', 'messages', 'explore', 'projects', 'about', 'contact', 'admin'];
 legacyPages.forEach(page => {
     app.get(`/${page}.html`, (req, res) => {
         // Redirect to the non-html version, preserving query string
@@ -53,7 +53,7 @@ legacyPages.forEach(page => {
 const pages = [
     'index', 'login', 'register', 'dashboard', 'profile',
     'projects', 'messages', 'settings',
-    'about', 'contact'
+    'about', 'contact', 'admin'
 ];
 
 pages.forEach(page => {
@@ -104,10 +104,7 @@ app.get('/explore', optionalAuth, async (req, res) => {
 });
 app.get('/explore.html', (req, res) => res.redirect('/explore'));
 
-// Default route → index
-app.get('/', (req, res) => {
-    res.send('Hello world');
-});
+// Default route → index rendered in pages setup above
 
 // ─── Global Error Handler ────────────────────────────────────────────────────
 app.use((err, req, res, next) => {

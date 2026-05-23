@@ -7,6 +7,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const form        = document.getElementById('register-form');
     const submitBtn   = form.querySelector('button[type="submit"]');
 
+    // ── Password Strength Indicator ───────────────────────────────────────────
+    const passInput = document.getElementById('reg-password');
+    const strengthFill = document.getElementById('password-strength-fill');
+    const strengthLabel = document.getElementById('password-strength-label');
+
+    if (passInput && strengthFill) {
+        passInput.addEventListener('input', () => {
+            const val = passInput.value;
+            let score = 0;
+            if (val.length >= 8) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+
+            const levels = [
+                { label: '', color: 'transparent', width: '0%' },
+                { label: '⚠️ Weak',   color: '#ef4444', width: '25%' },
+                { label: '🔶 Fair',   color: '#f59e0b', width: '50%' },
+                { label: '✅ Strong', color: '#10b981', width: '75%' },
+                { label: '🔒 Very Strong', color: '#059669', width: '100%' }
+            ];
+            const level = levels[score] || levels[0];
+            strengthFill.style.width = level.width;
+            strengthFill.style.background = level.color;
+            strengthLabel.textContent = level.label;
+            strengthLabel.style.color = level.color;
+        });
+    }
+
     // Radio button styling toggle (preserves original UX)
     const radios = document.querySelectorAll('input[name="reg-role"]');
     radios.forEach(radio => {

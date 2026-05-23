@@ -13,8 +13,10 @@ const {
     removeSkill,
     addExperience,
     removeExperience,
+    updateExperience,
     addEducation,
     removeEducation,
+    updateEducation,
     rateUser,
     getNotifications,
     markNotificationsRead,
@@ -42,10 +44,12 @@ router.delete('/skills/:skill',    protect, removeSkill);
 
 // Experience (individual)
 router.post('/experience',         protect, addExperience);
+router.put('/experience/:id',      protect, updateExperience);
 router.delete('/experience/:id',   protect, removeExperience);
 
 // Education (individual)
 router.post('/education',          protect, addEducation);
+router.put('/education/:id',       protect, updateEducation);
 router.delete('/education/:id',    protect, removeEducation);
 
 // Notifications

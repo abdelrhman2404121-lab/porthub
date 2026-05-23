@@ -208,6 +208,53 @@
                                 </div>
                                 <button type="submit" class="btn btn-outline">Add Project</button>
                             </form>
+
+                            <!-- Experience & Education (Individual Only) -->
+                            <div id="individual-experience-education" style="display: none;">
+                                <h3 class="mb-4 pt-4" style="border-top: 1px solid var(--border-color);">Experience</h3>
+                                <div id="set-exp-list" class="mb-4 flex flex-col gap-2"></div>
+                                
+                                <form id="form-add-exp" class="mb-4 border-t pt-4" style="border-color: var(--border-color);">
+                                    <h4 class="mb-2">Add Experience</h4>
+                                    <div class="grid grid-cols-2">
+                                        <div class="form-group" style="padding-right: 10px;">
+                                            <label>Role / Position</label>
+                                            <input type="text" id="set-exp-role" class="form-control" placeholder="Senior Software Engineer" required>
+                                        </div>
+                                        <div class="form-group" style="padding-left: 10px;">
+                                            <label>Company</label>
+                                            <input type="text" id="set-exp-company" class="form-control" placeholder="Google" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Years (e.g. 2021 - Present)</label>
+                                        <input type="text" id="set-exp-years" class="form-control" placeholder="2021 - Present" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-outline">Add Experience</button>
+                                </form>
+
+                                <h3 class="mb-4 pt-4" style="border-top: 1px solid var(--border-color);">Education</h3>
+                                <div id="set-edu-list" class="mb-4 flex flex-col gap-2"></div>
+
+                                <form id="form-add-edu" class="mb-4 border-t pt-4" style="border-color: var(--border-color);">
+                                    <h4 class="mb-2">Add Education</h4>
+                                    <div class="grid grid-cols-2">
+                                        <div class="form-group" style="padding-right: 10px;">
+                                            <label>Degree / Field of Study</label>
+                                            <input type="text" id="set-edu-degree" class="form-control" placeholder="M.S. in Computer Science" required>
+                                        </div>
+                                        <div class="form-group" style="padding-left: 10px;">
+                                            <label>School / University</label>
+                                            <input type="text" id="set-edu-school" class="form-control" placeholder="Stanford University" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Year (e.g. 2020)</label>
+                                        <input type="text" id="set-edu-year" class="form-control" placeholder="2020" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-outline">Add Education</button>
+                                </form>
+                            </div>
                         </div>
 
                         <!-- Company Details Section -->

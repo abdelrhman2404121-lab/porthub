@@ -561,6 +561,74 @@ img {
     }
 }
 
+/* ── 480px Mobile Breakpoint ──────────────────────────────────────────────── */
+@media (max-width: 480px) {
+    body { font-size: 14px; }
+
+    .navbar {
+        padding: 10px 14px;
+    }
+
+    .navbar .search-bar {
+        display: none;
+    }
+
+    .content-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .content-header h1 {
+        font-size: 1.3rem;
+    }
+
+    .card {
+        padding: 16px;
+    }
+
+    .btn {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+    }
+
+    .auth-card {
+        padding: 24px 18px;
+        margin: 10px;
+    }
+
+    .grid-cols-2,
+    .grid-cols-3,
+    .grid-cols-4 {
+        grid-template-columns: 1fr !important;
+    }
+
+    .flex.gap-4 {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .chatbot-window {
+        width: calc(100vw - 20px);
+        right: 10px;
+    }
+
+    .settings-nav {
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 4px;
+        padding-bottom: 4px;
+    }
+
+    .modal-content {
+        width: 95vw;
+        max-width: 100%;
+        margin: 10px auto;
+        padding: 20px;
+    }
+}
+
+
 /* AI Chatbot Styles */
 .chatbot-fab {
     position: fixed;

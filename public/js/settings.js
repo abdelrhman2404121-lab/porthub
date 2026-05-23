@@ -34,6 +34,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (navTm) navTm.style.display = 'block';
         if (navPs) navPs.textContent   = 'Products & Services';
         if (cvTtl) cvTtl.textContent   = 'Upload Company Brochure / Pitch Deck';
+    } else {
+        const indExpEdu = document.getElementById('individual-experience-education');
+        if (indExpEdu) indExpEdu.style.display = 'block';
     }
 
     // ── Account Form ──────────────────────────────────────────────────────────
@@ -612,6 +615,159 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const res = await apiFetch(`/users/education/${id}`, { method:'DELETE' });
                 currentUser.education = res.education; setSession(getToken(), currentUser); renderEdu();
             } catch (err) { showNotification(err.message,'error'); }
+        };
+    }
+
+    // ── Social Links (all users) ──────────────────────────────────────────────
+    // Helper: validate URL
+    function isValidUrl(str) {
+        if (!str) return true; // Empty is fine
+        try { new URL(str.startsWith('http') ? str : 'https://' + str); return true; }
+        catch { return false; }
+    }
+
+    const socialForm = document.getElementById('form-social');
+    if (socialForm) {
+        // Pre-fill existing social links
+        const sl = currentUser.socialLinks || {};
+        ['linkedin','github','twitter','website','instagram','youtube'].forEach(k => {
+            const el = document.getElementById(`set-social-${k}`);
+            if (el) el.value = sl[k] || '';
+        });
+
+        socialForm.addEventListener('submit', async e => {
+            e.preventDefault();
+            const fields = ['linkedin','github','twitter','website','instagram','youtube'];
+            const socialLinks = {};
+            let hasError = false;
+
+            fields.forEach(k => {
+                const el = document.getElementById(`set-social-${k}`);
+                if (!el) return;
+                const val = el.value.trim();
+                if (val && !isValidUrl(val)) {
+                    showNotification(`Invalid URL for ${k}. Must be a valid web address.`, 'error');
+                    hasError = true;
+                    el.style.borderColor = 'var(--danger)';
+                } else {
+                    el.style.borderColor = '';
+                    if (val) socialLinks[k] = val.startsWith('http') ? val : 'https://' + val;
+                }
+            });
+
+            if (hasError) return;
+
+            try {
+                const res = await apiFetch('/users/profile', {
+                    method: 'PUT',
+                    body: JSON.stringify({ socialLinks })
+                });
+                currentUser = res.user;
+                setSession(getToken(), currentUser);
+                showNotification('Social links updated!');
+            } catch (err) { showNotification(err.message || 'Update failed.', 'error'); }
+        });
+    }
+
+    // ── Company Details Form ──────────────────────────────────────────────────
+    if (currentUser.role === 'company') {
+        const companyForm = document.getElementById('form-company-details');
+        if (companyForm) {
+            // Pre-fill
+            const setComp = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+            setComp('set-industry',    currentUser.industry);
+            setComp('set-company-size',currentUser.companySize);
+            setComp('set-founded',     currentUser.founded);
+            setComp('set-hq',          currentUser.headquarters);
+            setComp('set-location',    currentUser.location);
+            setComp('set-website',     currentUser.website);
+
+            companyForm.addEventListener('submit', async e => {
+                e.preventDefault();
+                const website = document.getElementById('set-website')?.value.trim();
+                if (website && !isValidUrl(website)) {
+                    showNotification('Invalid website URL.', 'error'); return;
+                }
+                try {
+                    const res = await apiFetch('/users/profile', {
+                        method: 'PUT',
+                        body: JSON.stringify({
+                            industry:     document.getElementById('set-industry')?.value.trim(),
+                            companySize:  document.getElementById('set-company-size')?.value.trim(),
+                            founded:      document.getElementById('set-founded')?.value.trim(),
+                            headquarters: document.getElementById('set-hq')?.value.trim(),
+                            location:     document.getElementById('set-location')?.value.trim(),
+                            website:      website ? (website.startsWith('http') ? website : 'https://' + website) : ''
+                        })
+                    });
+                    currentUser = res.user;
+                    setSession(getToken(), currentUser);
+                    showNotification('Company details updated!');
+                } catch (err) { showNotification(err.message || 'Update failed.', 'error'); }
+            });
+        }
+
+        // ── Company Timeline (Milestones) ─────────────────────────────────────
+        function renderTimeline() {
+            const el = document.getElementById('set-timeline-list');
+            if (!el) return;
+            const items = currentUser.timeline || [];
+            el.innerHTML = items.length
+                ? items.map(t => `
+                    <div class="p-4 mb-3 glass-panel hover-lift animate-fade-in" style="border-radius:var(--radius-lg);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+                        <div>
+                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                                <span style="font-size:1.4rem;">${t.icon || '📌'}</span>
+                                <h4 style="margin:0;color:var(--primary-color);">${t.title}</h4>
+                            </div>
+                            <p class="text-sm text-secondary" style="margin:0;">${t.date ? new Date(t.date).getFullYear() : ''} — ${t.description || ''}</p>
+                        </div>
+                        <button class="btn btn-outline" style="color:var(--danger);border-color:var(--danger);padding:6px 12px;flex-shrink:0;" onclick="window.removeTimeline('${t._id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>`).join('')
+                : '<p class="text-sm text-secondary">No timeline milestones yet. Add company achievements!</p>';
+        }
+        renderTimeline();
+
+        const timelineForm = document.getElementById('form-add-timeline');
+        if (timelineForm) {
+            timelineForm.addEventListener('submit', async e => {
+                e.preventDefault();
+                const title       = document.getElementById('set-tl-title')?.value.trim();
+                const description = document.getElementById('set-tl-desc')?.value.trim();
+                const date        = document.getElementById('set-tl-date')?.value;
+                const icon        = document.getElementById('set-tl-icon')?.value.trim() || '📌';
+                if (!title) { showNotification('Timeline title is required.', 'error'); return; }
+                const newEntry = { title, description, date, icon };
+                const updated = [...(currentUser.timeline || []), newEntry];
+                try {
+                    const res = await apiFetch('/users/profile', {
+                        method: 'PUT',
+                        body: JSON.stringify({ timeline: updated })
+                    });
+                    currentUser = res.user;
+                    setSession(getToken(), currentUser);
+                    renderTimeline();
+                    timelineForm.reset();
+                    showNotification('Milestone added to your timeline!');
+                } catch (err) { showNotification(err.message || 'Failed.', 'error'); }
+            });
+        }
+
+        window.removeTimeline = async id => {
+            if (!confirm('Remove this timeline milestone?')) return;
+            const updated = (currentUser.timeline || []).filter(t => String(t._id) !== id);
+            try {
+                const res = await apiFetch('/users/profile', {
+                    method: 'PUT',
+                    body: JSON.stringify({ timeline: updated })
+                });
+                currentUser = res.user;
+                setSession(getToken(), currentUser);
+                renderTimeline();
+                showNotification('Milestone removed.');
+            } catch (err) { showNotification(err.message || 'Failed.', 'error'); }
         };
     }
 });

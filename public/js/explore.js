@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="card card-3d card-enter text-center" style="position:relative;animation-delay:${i * 55}ms;">
                         ${badge}
                         <div style="position:relative;width:84px;height:84px;margin:16px auto 12px;">
-                            <img src="${avatar}" alt="${user.name}"
+                            <img src="${avatar}" alt="${user.name}" loading="lazy"
                                  style="width:84px;height:84px;border-radius:50%;object-fit:cover;
                                         border:3px solid var(--border-color);transition:transform 0.3s ease,box-shadow 0.3s ease;"
                                  onmouseover="this.style.transform='scale(1.08)';this.style.boxShadow='0 0 0 4px var(--secondary-color)'"
