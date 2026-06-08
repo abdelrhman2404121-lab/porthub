@@ -1,7 +1,7 @@
 /* js/chatbot.js */
 (function() {
   const CONFIG = {
-    API_KEY: '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',
+    API_KEY: 'AQ.Ab8RN6J3BUHjbNgIqKbsTfG5Kx7DTJfRcTiCJJ8Cj_2m87VC7A',
     API_URL: 'https://api.groq.com/openai/v1/chat/completions',
     MODEL: 'llama-3.3-70b-versatile',
     MAX_HISTORY: 10
