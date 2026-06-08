@@ -133,6 +133,7 @@ const login = async (req, res) => {
     }
 };
 
+
 // ─── POST /api/auth/logout ────────────────────────────────────────────────────
 /**
  * Logout — sets isOnline: false, updates lastSeen. 

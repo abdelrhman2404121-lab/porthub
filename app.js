@@ -91,7 +91,7 @@ app.get('/explore', optionalAuth, async (req, res) => {
             query.role = role;
         }
 
-        let sortObj = { createdAt: -1 }; // newest
+        let sortObj = { createdAt: -1 }; 
         if (sort === 'oldest') sortObj = { createdAt: 1 };
         if (sort === 'rating') sortObj = { rating: -1, ratingCount: -1 };
 

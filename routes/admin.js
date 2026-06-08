@@ -22,7 +22,6 @@ const { protect, adminOnly } = require('../middleware/auth');
 // All admin routes require login + admin role
 router.use(protect, adminOnly);
 
-// Dashboard Stats
 router.get('/stats',                    getStats);
 
 // Users

@@ -51,7 +51,7 @@ const addComment = async (req, res) => {
             rating:       rating ? parseInt(rating) : null
         });
 
-        // Notify profile owner
+        
         targetUser.notifications.unshift({
             text:  `<strong>${req.user.name}</strong> left a comment on your profile.`,
             type:  'comment',

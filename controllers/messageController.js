@@ -38,7 +38,7 @@ const getMessages = async (req, res) => {
         const isParticipant = convo.participants.some(p => p._id.toString() === req.user._id.toString());
         if (!isParticipant) return res.status(403).json({ success: false, message: 'Access denied.' });
 
-        // Mark incoming messages as read
+        
         let updated = false;
         convo.messages.forEach(msg => {
             if (msg.senderId.toString() !== req.user._id.toString() && !msg.isRead) {

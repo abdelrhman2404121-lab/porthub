@@ -25,7 +25,7 @@ const protect = async (req, res, next) => {
             return res.status(401).json({ success: false, message: 'Not authenticated. Please log in.' });
         }
 
-        // 2) Verify the token
+      
         let decoded;
         try {
             decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -33,13 +33,11 @@ const protect = async (req, res, next) => {
             return res.status(401).json({ success: false, message: 'Invalid or expired token. Please log in again.' });
         }
 
-        // 3) Check user still exists
         const user = await User.findById(decoded.id).select('-password -ratedBy');
         if (!user) {
             return res.status(401).json({ success: false, message: 'User no longer exists.' });
         }
 
-        // 4) Check if user is blocked
         if (user.isBlocked) {
             return res.status(403).json({ success: false, message: 'Your account has been blocked by an administrator.' });
         }

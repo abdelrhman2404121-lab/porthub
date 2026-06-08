@@ -59,9 +59,9 @@ const getAllUsers = async (req, res) => {
     try {
         const { q, role, status, page = 1, limit = 50 } = req.query;
 
-        const filter = {};
+        const filter = { role: { $ne: 'admin' } };
 
-        if (role && ['individual', 'company', 'admin'].includes(role)) filter.role = role;
+        if (role && ['individual', 'company'].includes(role)) filter.role = role;
         if (status === 'blocked')  filter.isBlocked = true;
         if (status === 'active')   filter.isBlocked = false;
         if (status === 'online')   filter.isOnline  = true;
@@ -187,12 +187,12 @@ const deleteUser = async (req, res) => {
         const user = await User.findById(req.params.id);
         if (!user) return res.status(404).json({ success: false, message: 'User not found.' });
 
-        // Prevent deleting another admin
-        if (user.role === 'admin') {
-            return res.status(403).json({ success: false, message: 'Cannot delete admin accounts.' });
+        
+        if (user.role === 'admin' && req.user._id.toString() !== user._id.toString()) {
+            return res.status(403).json({ success: false, message: 'Cannot delete other admin accounts.' });
         }
 
-        // Cascade delete projects and comments
+        
         await Promise.all([
             Project.deleteMany({ userId: user._id }),
             Comment.deleteMany({ $or: [{ userId: user._id }, { targetUserId: user._id }] }),

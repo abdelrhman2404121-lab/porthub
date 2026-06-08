@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -55,13 +55,25 @@
             <button class="theme-toggle" id="theme-toggle" style="background: none; border: none; font-size: 1.2rem; cursor: pointer;">
               <i class="fas fa-moon" id="theme-icon"></i>
             </button>
-            <div class="user-menu">
-              <span>Admin <span class="badge-admin">ROOT</span></span>
-              <img
-                src="https://i.pravatar.cc/150?img=12"
-                alt="Admin"
-                class="user-avatar"
-              />
+            <div class="user-menu-section" id="user-menu-section">
+              <div class="user-menu" id="user-menu">
+                <span>Admin <span class="badge-admin">ROOT</span></span>
+                <img
+                  src="https://i.pravatar.cc/150?img=12"
+                  alt="Admin"
+                  class="user-avatar"
+                  id="nav-avatar"
+                />
+                <i class="fas fa-chevron-down text-sm"></i>
+
+                <div class="dropdown-menu" id="user-dropdown">
+                  <a href="/"><i class="fas fa-home"></i> Main Site</a>
+                  <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                  <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+                  <hr />
+                  <a href="#" id="logout-btn" style="color: var(--danger) !important;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+              </div>
             </div>
           </div>
         </nav>

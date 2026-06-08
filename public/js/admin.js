@@ -124,11 +124,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     window.deleteUser = async id => {
-        if (!confirm('Permanently delete this user and all their data?')) return;
+        const isSelf = (id === me._id);
+        const confirmMsg = isSelf 
+            ? '⚠️ WARNING: You are about to permanently delete your OWN administrator account. This action cannot be undone. Are you sure?' 
+            : 'Permanently delete this user and all their data?';
+            
+        if (!confirm(confirmMsg)) return;
         try {
             await apiFetch(`/admin/users/${id}`, { method: 'DELETE' });
-            showNotification('User deleted.');
-            renderUsers(); loadStats();
+            showNotification('User deleted successfully.');
+            if (isSelf) {
+                clearSession();
+                window.location.href = '/login.html';
+            } else {
+                renderUsers(); loadStats();
+            }
         } catch (err) { showNotification(err.message, 'error'); }
     };
 
